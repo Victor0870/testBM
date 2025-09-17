@@ -783,6 +783,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 628962268}
     m_Modifications:
+    - target: {fileID: 434545783001908761, guid: b8d1b8f637be3614d9cae118e7fddce0, type: 3}
+      propertyPath: m_text
+      value: "Xu\u1EA5t h\xF3a \u0111\u01A1n \u0111i\u1EC7n t\u1EED"
+      objectReference: {fileID: 0}
+    - target: {fileID: 434545783001908761, guid: b8d1b8f637be3614d9cae118e7fddce0, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 374397f8475350542b199a2b07a568ab, type: 2}
+    - target: {fileID: 434545783001908761, guid: b8d1b8f637be3614d9cae118e7fddce0, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -8824084400470962071, guid: 374397f8475350542b199a2b07a568ab, type: 2}
+    - target: {fileID: 434545783001908761, guid: b8d1b8f637be3614d9cae118e7fddce0, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1229787737252965747, guid: b8d1b8f637be3614d9cae118e7fddce0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2231,7 +2247,7 @@ MonoBehaviour:
         - 
         - 
         actionEnabled: 0101
-        actionIsOpen: 0000
+        actionIsOpen: 0101
         actionStartIndex: 0000000005000000
         actionHashCodes: b2cf100043e24103
         unityObjectParams: []
