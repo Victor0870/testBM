@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 372f394895d9a7e4fb3ecd1c5ea72a52
+timeCreated: 1519401538
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 112262
+  packageName: BG Database | Data editor with Google Sheets and Excel syncing
+  packageVersion: 1.8.19
+  assetPath: Assets/BansheeGz/BGDatabase/Editor/Scripts/BGDatabaseEditorSourceCode.unitypackage
+  uploadId: 760980

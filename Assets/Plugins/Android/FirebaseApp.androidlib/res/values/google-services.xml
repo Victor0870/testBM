@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+  <string name="gcm_defaultSenderId" translatable="false">924296680961</string>
+  <string name="google_storage_bucket" translatable="false">bizmate-1e317.firebasestorage.app</string>
+  <string name="project_id" translatable="false">bizmate-1e317</string>
+  <string name="google_api_key" translatable="false">AIzaSyBFNwRPNCkk5xA7v2c41_RB2Rg33o55DTw</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBFNwRPNCkk5xA7v2c41_RB2Rg33o55DTw</string>
+  <string name="google_app_id" translatable="false">1:924296680961:android:65eeb0a67817c6827c5200</string>
+</resources>

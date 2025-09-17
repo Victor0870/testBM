@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0798f317076bff34dbbfc849eb881b6a
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 112262
+  packageName: BG Database | Data editor with Google Sheets and Excel syncing
+  packageVersion: 1.8.19
+  assetPath: Assets/BansheeGz/BGDatabase/Editor/Res/BGDatabaseDarkSkin.dat
+  uploadId: 760980

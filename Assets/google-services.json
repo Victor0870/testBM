@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "924296680961",
+    "project_id": "bizmate-1e317",
+    "storage_bucket": "bizmate-1e317.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924296680961:android:65eeb0a67817c6827c5200",
+        "android_client_info": {
+          "package_name": "com.Victory.Bizmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFNwRPNCkk5xA7v2c41_RB2Rg33o55DTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924296680961:android:638a25bda26ca01b7c5200",
+        "android_client_info": {
+          "package_name": "com.VictoryGame.Bitmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFNwRPNCkk5xA7v2c41_RB2Rg33o55DTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
