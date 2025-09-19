@@ -1789,6 +1789,50 @@ MonoBehaviour:
   m_DetailTexSpeed: {x: 0, y: 0}
   m_CustomRoot: {fileID: 0}
   m_Flip: 0
+--- !u!1 &702385023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 702385025}
+  - component: {fileID: 702385024}
+  m_Layer: 0
+  m_Name: GoogleAdmob
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &702385024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702385023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313b65884111603459d24587436519ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &702385025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702385023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.038668707, y: 0.118181676, z: -8.785587}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &804380062
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2783,6 +2827,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a32a47db1ebfd544b36866fd331652c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  adMobBannerController: {fileID: 702385024}
   shopNameText: {fileID: 1299297610}
   dailyRevenueText: {fileID: 316477718}
   dailyOrderCountText: {fileID: 804380064}
@@ -5347,3 +5392,4 @@ SceneRoots:
   - {fileID: 1067235249}
   - {fileID: 1897872049}
   - {fileID: 110711846}
+  - {fileID: 702385025}

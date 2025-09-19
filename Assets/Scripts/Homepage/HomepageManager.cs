@@ -11,6 +11,7 @@ using System.Linq;
 
 public class HomepageManager : MonoBehaviour
 {
+
     [Header("UI References")]
     public TextMeshProUGUI shopNameText;
     public TextMeshProUGUI dailyRevenueText;
@@ -45,6 +46,8 @@ public class HomepageManager : MonoBehaviour
     void OnDestroy()
     {
         auth.StateChanged -= AuthStateChanged;
+
+
     }
 
     void Start()
@@ -68,6 +71,8 @@ public class HomepageManager : MonoBehaviour
 
         LoadHomepageData();
         CheckFeatureAccess();
+        AdManager.Instance.RequestAdaptiveBanner();
+
     }
 
     private void AuthStateChanged(object sender, EventArgs eventArgs)
