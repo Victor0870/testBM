@@ -176,5 +176,223 @@ namespace daBizmate
 			public const string Status = "Status";
 		}
 	}
+
+	[Preserve]
+	public partial class E_Product : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5318388155148354012UL,8259996843644559747UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		public System.Int32 f_stock
+		{
+			get => _f_stock[Index];
+			set => _f_stock.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5038703583957768314UL, 16746158830390540212UL), () => _ufle12jhs77_f_name = null));
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_f_stock;
+		public static BansheeGz.BGDatabase.BGFieldInt _f_stock => _ufle12jhs77_f_stock ?? (_ufle12jhs77_f_stock = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4754894510539051449UL, 819436086430403714UL), () => _ufle12jhs77_f_stock = null));
+		private E_Product() : base(MetaDefault) {}
+		private E_Product(BGId id) : base(MetaDefault, id) {}
+		private E_Product(BGMetaEntity meta) : base(meta) {}
+		private E_Product(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_Product FindEntity(Predicate<E_Product> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_Product> FindEntities(Predicate<E_Product> filter, List<E_Product> result=null, Comparison<E_Product> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_Product> action, Predicate<E_Product> filter=null, Comparison<E_Product> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_Product GetEntity(BGId entityId) => (E_Product) MetaDefault.GetEntity(entityId);
+		public static E_Product GetEntity(int index) => (E_Product) MetaDefault[index];
+		public static E_Product GetEntity(string entityName) => (E_Product) MetaDefault.GetEntity(entityName);
+		public static E_Product NewEntity() => (E_Product) MetaDefault.NewEntity();
+		public static E_Product NewEntity(BGId entityId) => (E_Product) MetaDefault.NewEntity(entityId);
+		public static E_Product NewEntity(Action<E_Product> callback) => (E_Product) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_Product)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_Product(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_Product(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Product";
+			public const string name = "name";
+			public const string stock = "stock";
+		}
+	}
+
+	[Preserve]
+	public partial class E_Customer : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5637233438222424364UL,8087134851825206954UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5570269189317958433UL, 12347607792865066943UL), () => _ufle12jhs77_f_name = null));
+		private E_Customer() : base(MetaDefault) {}
+		private E_Customer(BGId id) : base(MetaDefault, id) {}
+		private E_Customer(BGMetaEntity meta) : base(meta) {}
+		private E_Customer(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_Customer FindEntity(Predicate<E_Customer> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_Customer> FindEntities(Predicate<E_Customer> filter, List<E_Customer> result=null, Comparison<E_Customer> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_Customer> action, Predicate<E_Customer> filter=null, Comparison<E_Customer> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_Customer GetEntity(BGId entityId) => (E_Customer) MetaDefault.GetEntity(entityId);
+		public static E_Customer GetEntity(int index) => (E_Customer) MetaDefault[index];
+		public static E_Customer GetEntity(string entityName) => (E_Customer) MetaDefault.GetEntity(entityName);
+		public static E_Customer NewEntity() => (E_Customer) MetaDefault.NewEntity();
+		public static E_Customer NewEntity(BGId entityId) => (E_Customer) MetaDefault.NewEntity(entityId);
+		public static E_Customer NewEntity(Action<E_Customer> callback) => (E_Customer) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_Customer)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_Customer(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_Customer(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Customer";
+			public const string name = "name";
+		}
+	}
+
+	[Preserve]
+	public partial class E_Invoice : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5240743170133141296UL,17608457154150842516UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5505328453340341159UL, 3441740747393282697UL), () => _ufle12jhs77_f_name = null));
+		private E_Invoice() : base(MetaDefault) {}
+		private E_Invoice(BGId id) : base(MetaDefault, id) {}
+		private E_Invoice(BGMetaEntity meta) : base(meta) {}
+		private E_Invoice(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_Invoice FindEntity(Predicate<E_Invoice> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_Invoice> FindEntities(Predicate<E_Invoice> filter, List<E_Invoice> result=null, Comparison<E_Invoice> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_Invoice> action, Predicate<E_Invoice> filter=null, Comparison<E_Invoice> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_Invoice GetEntity(BGId entityId) => (E_Invoice) MetaDefault.GetEntity(entityId);
+		public static E_Invoice GetEntity(int index) => (E_Invoice) MetaDefault[index];
+		public static E_Invoice GetEntity(string entityName) => (E_Invoice) MetaDefault.GetEntity(entityName);
+		public static E_Invoice NewEntity() => (E_Invoice) MetaDefault.NewEntity();
+		public static E_Invoice NewEntity(BGId entityId) => (E_Invoice) MetaDefault.NewEntity(entityId);
+		public static E_Invoice NewEntity(Action<E_Invoice> callback) => (E_Invoice) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_Invoice)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_Invoice(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_Invoice(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Invoice";
+			public const string name = "name";
+		}
+	}
+
+	[Preserve]
+	public partial class E_package : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4841492738090507194UL,4806060649396438152UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5182332107515952305UL, 8554624948589979055UL), () => _ufle12jhs77_f_name = null));
+		private E_package() : base(MetaDefault) {}
+		private E_package(BGId id) : base(MetaDefault, id) {}
+		private E_package(BGMetaEntity meta) : base(meta) {}
+		private E_package(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_package FindEntity(Predicate<E_package> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_package> FindEntities(Predicate<E_package> filter, List<E_package> result=null, Comparison<E_package> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_package> action, Predicate<E_package> filter=null, Comparison<E_package> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_package GetEntity(BGId entityId) => (E_package) MetaDefault.GetEntity(entityId);
+		public static E_package GetEntity(int index) => (E_package) MetaDefault[index];
+		public static E_package GetEntity(string entityName) => (E_package) MetaDefault.GetEntity(entityName);
+		public static E_package NewEntity() => (E_package) MetaDefault.NewEntity();
+		public static E_package NewEntity(BGId entityId) => (E_package) MetaDefault.NewEntity(entityId);
+		public static E_package NewEntity(Action<E_package> callback) => (E_package) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_package)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_package(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_package(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "package";
+			public const string name = "name";
+		}
+	}
+
+	[Preserve]
+	public partial class E_Acc : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4933380133112868929UL,15305703214823084696UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5636442291379391906UL, 127791965539918230UL), () => _ufle12jhs77_f_name = null));
+		private E_Acc() : base(MetaDefault) {}
+		private E_Acc(BGId id) : base(MetaDefault, id) {}
+		private E_Acc(BGMetaEntity meta) : base(meta) {}
+		private E_Acc(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_Acc FindEntity(Predicate<E_Acc> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_Acc> FindEntities(Predicate<E_Acc> filter, List<E_Acc> result=null, Comparison<E_Acc> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_Acc> action, Predicate<E_Acc> filter=null, Comparison<E_Acc> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_Acc GetEntity(BGId entityId) => (E_Acc) MetaDefault.GetEntity(entityId);
+		public static E_Acc GetEntity(int index) => (E_Acc) MetaDefault[index];
+		public static E_Acc GetEntity(string entityName) => (E_Acc) MetaDefault.GetEntity(entityName);
+		public static E_Acc NewEntity() => (E_Acc) MetaDefault.NewEntity();
+		public static E_Acc NewEntity(BGId entityId) => (E_Acc) MetaDefault.NewEntity(entityId);
+		public static E_Acc NewEntity(Action<E_Acc> callback) => (E_Acc) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_Acc)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_Acc(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_Acc(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Acc";
+			public const string name = "name";
+		}
+	}
 }
 #pragma warning restore 414
