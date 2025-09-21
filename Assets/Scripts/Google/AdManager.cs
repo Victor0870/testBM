@@ -1,12 +1,18 @@
+// AdManager.cs
+
 using UnityEngine;
 using GoogleMobileAds.Api;
-using System; // Cần thêm using này để sử dụng Exception
+using System;
 
 public class AdManager : MonoBehaviour
 {
     public static AdManager Instance;
 
     private BannerView bannerView;
+
+    // Thêm một Action để thông báo khi banner được tải thành công
+    // float: chiều cao của banner đã tải (đơn vị pixel)
+    public static event Action<float> OnBannerLoaded;
 
     // Id banner
 #if UNITY_ANDROID
@@ -19,17 +25,13 @@ public class AdManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // Khoi tao Mobile Ads mot lan duy nhat
             MobileAds.Initialize(initStatus =>
             {
                 Debug.Log("Google Mobile Ads SDK Initialized (once).");
-                // Khi khoi tao xong co the load banner luon
                 RequestAdaptiveBanner();
             });
         }
@@ -42,7 +44,6 @@ public class AdManager : MonoBehaviour
     // Yeu cau banner adaptive (voi fallback)
     public void RequestAdaptiveBanner()
     {
-        // Xoa banner cu neu co
         if (bannerView != null)
         {
             bannerView.Destroy();
@@ -51,22 +52,29 @@ public class AdManager : MonoBehaviour
 
         try
         {
-            // Lay kich thuoc adaptive banner theo chieu ngang man hinh
-            AdSize adaptiveSize = AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(
-                AdSize.FullWidth);
-
+            AdSize adaptiveSize = AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(AdSize.FullWidth);
             bannerView = new BannerView(adUnitId, adaptiveSize, AdPosition.Bottom);
 
-            // Tạo request
+            // Đăng ký sự kiện khi banner được tải thành công
+            bannerView.OnBannerAdLoaded += () =>
+            {
+                Debug.Log("Adaptive banner loaded successfully.");
+                // Lấy chiều cao của banner đã tải và gửi đi qua event
+                // Sửa: Dùng thuộc tính Height thay cho HeightInPixels
+                float bannerHeightInDips = adaptiveSize.Height;
+                if (OnBannerLoaded != null)
+                {
+                    OnBannerLoaded.Invoke(bannerHeightInDips);
+                }
+            };
+
             AdRequest request = new AdRequest();
             bannerView.LoadAd(request);
-
             Debug.Log("Adaptive banner requested.");
         }
         catch (Exception ex)
         {
             Debug.LogWarning("AdMobManager: Adaptive banner not supported, falling back to fixed banner. Error: " + ex.Message);
-            // Fallback: gọi phương thức tạo banner cố định
             RequestFixedBanner();
         }
     }
@@ -82,17 +90,28 @@ public class AdManager : MonoBehaviour
             bannerView = null;
         }
 
-        // Banner cố định 320x50
         AdSize adSize = AdSize.Banner;
         bannerView = new BannerView(adUnitId, adSize, AdPosition.Bottom);
 
+        // Đăng ký sự kiện khi banner được tải thành công
+        bannerView.OnBannerAdLoaded += () =>
+        {
+            Debug.Log("Fixed banner loaded successfully.");
+            // Lấy chiều cao của banner đã tải và gửi đi qua event
+            // Sửa: Dùng thuộc tính Height thay cho HeightInPixels
+            float bannerHeightInDips = adSize.Height;
+            if (OnBannerLoaded != null)
+            {
+                OnBannerLoaded.Invoke(bannerHeightInDips);
+            }
+        };
+
         AdRequest adRequest = new AdRequest();
         bannerView.LoadAd(adRequest);
-
         Debug.Log("AdMobManager: Fixed banner load command sent.");
     }
 
-    // Ham an banner
+    // Các hàm khác không thay đổi...
     public void HideBanner()
     {
         if (bannerView != null)
@@ -101,7 +120,6 @@ public class AdManager : MonoBehaviour
         }
     }
 
-    // Ham hien banner
     public void ShowBanner()
     {
         if (bannerView != null)
@@ -110,7 +128,6 @@ public class AdManager : MonoBehaviour
         }
     }
 
-    // Ham huy banner
     public void DestroyBanner()
     {
         if (bannerView != null)

@@ -1,3 +1,5 @@
+// HomepageManager.cs
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -17,6 +19,12 @@ public class HomepageManager : MonoBehaviour
     public TextMeshProUGUI dailyRevenueText;
     public TextMeshProUGUI dailyOrderCountText;
     public Button logoutButton;
+    // Khai báo thêm đối tượng cần di chuyển
+    public RectTransform objectToMove; // Kéo thả đối tượng từ Inspector vào đây
+
+    [Header("UI Settings")]
+    [Tooltip("Khoảng cách di chuyển lên trên của UI khi banner quảng cáo xuất hiện, tính bằng Pixel.")]
+    public float moveDistanceInPixels = 200f;
 
     // Các nút điều hướng đến các Scene/tính năng khác
     [Header("Navigation Buttons")]
@@ -33,6 +41,7 @@ public class HomepageManager : MonoBehaviour
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private float initialYPosition;
 
     void Awake()
     {
@@ -46,8 +55,8 @@ public class HomepageManager : MonoBehaviour
     void OnDestroy()
     {
         auth.StateChanged -= AuthStateChanged;
-
-
+        // Hủy đăng ký lắng nghe event khi object bị hủy
+        AdManager.OnBannerLoaded -= OnBannerLoaded;
     }
 
     void Start()
@@ -71,9 +80,46 @@ public class HomepageManager : MonoBehaviour
 
         LoadHomepageData();
         CheckFeatureAccess();
+
+        // Đăng ký lắng nghe event từ AdManager
+        AdManager.OnBannerLoaded += OnBannerLoaded;
+
+        // Lưu vị trí Y ban đầu để sử dụng làm mốc
+        if (objectToMove != null)
+        {
+            initialYPosition = objectToMove.anchoredPosition.y;
+        }
+
+        // Yêu cầu load banner
         AdManager.Instance.RequestAdaptiveBanner();
 
     }
+
+    // Hàm này sẽ được gọi khi AdManager.OnBannerLoaded được kích hoạt
+    private void OnBannerLoaded(float bannerHeightInDips)
+    {
+        if (objectToMove != null)
+        {
+            // Sử dụng giá trị cố định từ Inspector
+            float fixedMoveDistanceInPixels = moveDistanceInPixels;
+
+            // Chuyển đổi Pixel sang đơn vị của Canvas
+            CanvasScaler scaler = objectToMove.GetComponentInParent<Canvas>().GetComponent<CanvasScaler>();
+            float referenceResolutionY = scaler.referenceResolution.y;
+            float heightRatio = referenceResolutionY / Screen.height;
+            float fixedMoveDistanceInCanvasUnits = fixedMoveDistanceInPixels * heightRatio;
+
+            // Di chuyển đối tượng lên trên từ vị trí ban đầu
+            objectToMove.anchoredPosition = new Vector2(objectToMove.anchoredPosition.x, initialYPosition + fixedMoveDistanceInCanvasUnits);
+
+            Debug.Log($"HomepageManager: Đã di chuyển đối tượng '{objectToMove.name}' lên trên {fixedMoveDistanceInCanvasUnits} đơn vị.");
+        }
+        else
+        {
+            Debug.LogWarning("HomepageManager: Object to Move (RectTransform) chưa được gán.");
+        }
+    }
+
 
     private void AuthStateChanged(object sender, EventArgs eventArgs)
     {
