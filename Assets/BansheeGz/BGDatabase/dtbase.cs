@@ -194,10 +194,66 @@ namespace daBizmate
 			get => _f_stock[Index];
 			set => _f_stock.SetValue(this, value);
 		}
+		public System.String f_productId
+		{
+			get => _f_productId[Index];
+			set => _f_productId[Index] = value;
+		}
+		public System.String f_unitOfProduct
+		{
+			get => _f_unitOfProduct[Index];
+			set => _f_unitOfProduct[Index] = value;
+		}
+		public System.Int64 f_price
+		{
+			get => _f_price[Index];
+			set => _f_price.SetValue(this, value);
+		}
+		public System.Int64 f_importPrice
+		{
+			get => _f_importPrice[Index];
+			set => _f_importPrice.SetValue(this, value);
+		}
+		public System.String f_barcode
+		{
+			get => _f_barcode[Index];
+			set => _f_barcode[Index] = value;
+		}
+		public System.String f_imageUrl
+		{
+			get => _f_imageUrl[Index];
+			set => _f_imageUrl[Index] = value;
+		}
+		public System.String f_category
+		{
+			get => _f_category[Index];
+			set => _f_category[Index] = value;
+		}
+		public System.String f_manufacturer
+		{
+			get => _f_manufacturer[Index];
+			set => _f_manufacturer[Index] = value;
+		}
 		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
 		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5038703583957768314UL, 16746158830390540212UL), () => _ufle12jhs77_f_name = null));
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_f_stock;
 		public static BansheeGz.BGDatabase.BGFieldInt _f_stock => _ufle12jhs77_f_stock ?? (_ufle12jhs77_f_stock = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4754894510539051449UL, 819436086430403714UL), () => _ufle12jhs77_f_stock = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_productId;
+		public static BansheeGz.BGDatabase.BGFieldString _f_productId => _ufle12jhs77_f_productId ?? (_ufle12jhs77_f_productId = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5254682366722265883UL, 2427087036519508608UL), () => _ufle12jhs77_f_productId = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_unitOfProduct;
+		public static BansheeGz.BGDatabase.BGFieldString _f_unitOfProduct => _ufle12jhs77_f_unitOfProduct ?? (_ufle12jhs77_f_unitOfProduct = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4869013436105316209UL, 3694035200545988265UL), () => _ufle12jhs77_f_unitOfProduct = null));
+		private static BansheeGz.BGDatabase.BGFieldLong _ufle12jhs77_f_price;
+		public static BansheeGz.BGDatabase.BGFieldLong _f_price => _ufle12jhs77_f_price ?? (_ufle12jhs77_f_price = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldLong>(MetaDefault, new BGId(5702426073617383554UL, 12876646289504157092UL), () => _ufle12jhs77_f_price = null));
+		private static BansheeGz.BGDatabase.BGFieldLong _ufle12jhs77_f_importPrice;
+		public static BansheeGz.BGDatabase.BGFieldLong _f_importPrice => _ufle12jhs77_f_importPrice ?? (_ufle12jhs77_f_importPrice = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldLong>(MetaDefault, new BGId(5334675310386954138UL, 9648216814892207272UL), () => _ufle12jhs77_f_importPrice = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_barcode;
+		public static BansheeGz.BGDatabase.BGFieldString _f_barcode => _ufle12jhs77_f_barcode ?? (_ufle12jhs77_f_barcode = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5442783833595810242UL, 2503684830089627024UL), () => _ufle12jhs77_f_barcode = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_imageUrl;
+		public static BansheeGz.BGDatabase.BGFieldString _f_imageUrl => _ufle12jhs77_f_imageUrl ?? (_ufle12jhs77_f_imageUrl = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5536539182466245398UL, 3489925550485291947UL), () => _ufle12jhs77_f_imageUrl = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_category;
+		public static BansheeGz.BGDatabase.BGFieldString _f_category => _ufle12jhs77_f_category ?? (_ufle12jhs77_f_category = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5140736828450240683UL, 13692473587517221015UL), () => _ufle12jhs77_f_category = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_manufacturer;
+		public static BansheeGz.BGDatabase.BGFieldString _f_manufacturer => _ufle12jhs77_f_manufacturer ?? (_ufle12jhs77_f_manufacturer = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5664643011207492742UL, 12663584601513306543UL), () => _ufle12jhs77_f_manufacturer = null));
 		private E_Product() : base(MetaDefault) {}
 		private E_Product(BGId id) : base(MetaDefault, id) {}
 		private E_Product(BGMetaEntity meta) : base(meta) {}
@@ -224,6 +280,14 @@ namespace daBizmate
 			public const string Meta = "Product";
 			public const string name = "name";
 			public const string stock = "stock";
+			public const string productId = "productId";
+			public const string unitOfProduct = "unitOfProduct";
+			public const string price = "price";
+			public const string importPrice = "importPrice";
+			public const string barcode = "barcode";
+			public const string imageUrl = "imageUrl";
+			public const string category = "category";
+			public const string manufacturer = "manufacturer";
 		}
 	}
 
@@ -281,8 +345,134 @@ namespace daBizmate
 			get => _f_name[Index];
 			set => _f_name[Index] = value;
 		}
+		public System.String f_type
+		{
+			get => _f_type[Index];
+			set => _f_type[Index] = value;
+		}
+		public System.String f_form
+		{
+			get => _f_form[Index];
+			set => _f_form[Index] = value;
+		}
+		public System.String f_serial
+		{
+			get => _f_serial[Index];
+			set => _f_serial[Index] = value;
+		}
+		public System.String f_seq
+		{
+			get => _f_seq[Index];
+			set => _f_seq[Index] = value;
+		}
+		public System.String f_ma_cqthu
+		{
+			get => _f_ma_cqthu[Index];
+			set => _f_ma_cqthu[Index] = value;
+		}
+		public System.String f_idt
+		{
+			get => _f_idt[Index];
+			set => _f_idt[Index] = value;
+		}
+		public System.String f_sid
+		{
+			get => _f_sid[Index];
+			set => _f_sid[Index] = value;
+		}
+		public System.String f_sec
+		{
+			get => _f_sec[Index];
+			set => _f_sec[Index] = value;
+		}
+		public System.String f_paym
+		{
+			get => _f_paym[Index];
+			set => _f_paym[Index] = value;
+		}
+		public System.String f_note
+		{
+			get => _f_note[Index];
+			set => _f_note[Index] = value;
+		}
+		public System.String f_bcode
+		{
+			get => _f_bcode[Index];
+			set => _f_bcode[Index] = value;
+		}
+		public System.String f_bname
+		{
+			get => _f_bname[Index];
+			set => _f_bname[Index] = value;
+		}
+		public System.String f_btax
+		{
+			get => _f_btax[Index];
+			set => _f_btax[Index] = value;
+		}
+		public System.String f_baddr
+		{
+			get => _f_baddr[Index];
+			set => _f_baddr[Index] = value;
+		}
+		public System.Double f_sum
+		{
+			get => _f_sum[Index];
+			set => _f_sum.SetValue(this, value);
+		}
+		public System.Double f_vat
+		{
+			get => _f_vat[Index];
+			set => _f_vat.SetValue(this, value);
+		}
+		public System.Double f_total
+		{
+			get => _f_total[Index];
+			set => _f_total.SetValue(this, value);
+		}
+		public System.String f_word
+		{
+			get => _f_word[Index];
+			set => _f_word[Index] = value;
+		}
 		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
 		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5505328453340341159UL, 3441740747393282697UL), () => _ufle12jhs77_f_name = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_type;
+		public static BansheeGz.BGDatabase.BGFieldString _f_type => _ufle12jhs77_f_type ?? (_ufle12jhs77_f_type = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5066362753772283886UL, 5766493606295713669UL), () => _ufle12jhs77_f_type = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_form;
+		public static BansheeGz.BGDatabase.BGFieldString _f_form => _ufle12jhs77_f_form ?? (_ufle12jhs77_f_form = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5067385519586066799UL, 4453828191597284250UL), () => _ufle12jhs77_f_form = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_serial;
+		public static BansheeGz.BGDatabase.BGFieldString _f_serial => _ufle12jhs77_f_serial ?? (_ufle12jhs77_f_serial = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4830674353967463069UL, 1566050399468693634UL), () => _ufle12jhs77_f_serial = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_seq;
+		public static BansheeGz.BGDatabase.BGFieldString _f_seq => _ufle12jhs77_f_seq ?? (_ufle12jhs77_f_seq = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5701858359185037090UL, 17058278905999382711UL), () => _ufle12jhs77_f_seq = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_ma_cqthu;
+		public static BansheeGz.BGDatabase.BGFieldString _f_ma_cqthu => _ufle12jhs77_f_ma_cqthu ?? (_ufle12jhs77_f_ma_cqthu = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5688283162424424365UL, 10554437971994195084UL), () => _ufle12jhs77_f_ma_cqthu = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_idt;
+		public static BansheeGz.BGDatabase.BGFieldString _f_idt => _ufle12jhs77_f_idt ?? (_ufle12jhs77_f_idt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4988210624031987900UL, 11449436209618537659UL), () => _ufle12jhs77_f_idt = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_sid;
+		public static BansheeGz.BGDatabase.BGFieldString _f_sid => _ufle12jhs77_f_sid ?? (_ufle12jhs77_f_sid = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4777583106039697743UL, 16810955946820927925UL), () => _ufle12jhs77_f_sid = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_sec;
+		public static BansheeGz.BGDatabase.BGFieldString _f_sec => _ufle12jhs77_f_sec ?? (_ufle12jhs77_f_sec = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5385920514192733045UL, 3841971344342272148UL), () => _ufle12jhs77_f_sec = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_paym;
+		public static BansheeGz.BGDatabase.BGFieldString _f_paym => _ufle12jhs77_f_paym ?? (_ufle12jhs77_f_paym = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5008345702486432160UL, 3001254554756370583UL), () => _ufle12jhs77_f_paym = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_note;
+		public static BansheeGz.BGDatabase.BGFieldString _f_note => _ufle12jhs77_f_note ?? (_ufle12jhs77_f_note = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4963201637462409495UL, 2582799392201617590UL), () => _ufle12jhs77_f_note = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_bcode;
+		public static BansheeGz.BGDatabase.BGFieldString _f_bcode => _ufle12jhs77_f_bcode ?? (_ufle12jhs77_f_bcode = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4744842112685694464UL, 14159363238917762736UL), () => _ufle12jhs77_f_bcode = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_bname;
+		public static BansheeGz.BGDatabase.BGFieldString _f_bname => _ufle12jhs77_f_bname ?? (_ufle12jhs77_f_bname = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5443383746194573965UL, 17584061104838857376UL), () => _ufle12jhs77_f_bname = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_btax;
+		public static BansheeGz.BGDatabase.BGFieldString _f_btax => _ufle12jhs77_f_btax ?? (_ufle12jhs77_f_btax = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4896435873444222916UL, 15666298701738669740UL), () => _ufle12jhs77_f_btax = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_baddr;
+		public static BansheeGz.BGDatabase.BGFieldString _f_baddr => _ufle12jhs77_f_baddr ?? (_ufle12jhs77_f_baddr = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5497829161299527014UL, 4282713089182038148UL), () => _ufle12jhs77_f_baddr = null));
+		private static BansheeGz.BGDatabase.BGFieldDouble _ufle12jhs77_f_sum;
+		public static BansheeGz.BGDatabase.BGFieldDouble _f_sum => _ufle12jhs77_f_sum ?? (_ufle12jhs77_f_sum = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldDouble>(MetaDefault, new BGId(5714532479136091256UL, 10378261326345937802UL), () => _ufle12jhs77_f_sum = null));
+		private static BansheeGz.BGDatabase.BGFieldDouble _ufle12jhs77_f_vat;
+		public static BansheeGz.BGDatabase.BGFieldDouble _f_vat => _ufle12jhs77_f_vat ?? (_ufle12jhs77_f_vat = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldDouble>(MetaDefault, new BGId(4744092194037203724UL, 12208251922122365061UL), () => _ufle12jhs77_f_vat = null));
+		private static BansheeGz.BGDatabase.BGFieldDouble _ufle12jhs77_f_total;
+		public static BansheeGz.BGDatabase.BGFieldDouble _f_total => _ufle12jhs77_f_total ?? (_ufle12jhs77_f_total = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldDouble>(MetaDefault, new BGId(5375309683875083387UL, 10321889810010924212UL), () => _ufle12jhs77_f_total = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_word;
+		public static BansheeGz.BGDatabase.BGFieldString _f_word => _ufle12jhs77_f_word ?? (_ufle12jhs77_f_word = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4634912967513153466UL, 8937273941592021916UL), () => _ufle12jhs77_f_word = null));
 		private E_Invoice() : base(MetaDefault) {}
 		private E_Invoice(BGId id) : base(MetaDefault, id) {}
 		private E_Invoice(BGMetaEntity meta) : base(meta) {}
@@ -308,6 +498,24 @@ namespace daBizmate
 		{
 			public const string Meta = "Invoice";
 			public const string name = "name";
+			public const string type = "type";
+			public const string form = "form";
+			public const string serial = "serial";
+			public const string seq = "seq";
+			public const string ma_cqthu = "ma_cqthu";
+			public const string idt = "idt";
+			public const string sid = "sid";
+			public const string sec = "sec";
+			public const string paym = "paym";
+			public const string note = "note";
+			public const string bcode = "bcode";
+			public const string bname = "bname";
+			public const string btax = "btax";
+			public const string baddr = "baddr";
+			public const string sum = "sum";
+			public const string vat = "vat";
+			public const string total = "total";
+			public const string word = "word";
 		}
 	}
 
