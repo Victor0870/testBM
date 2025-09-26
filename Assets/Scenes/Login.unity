@@ -726,6 +726,7 @@ MonoBehaviour:
   loginPanel: {fileID: 1026186937}
   createAccountPanel: {fileID: 1714133746}
   emailVerificationNotificationPanel: {fileID: 932437323}
+  fullScreenLoadingPrefab: {fileID: 1840188249316475575, guid: b3771eba48a8ace45ad638e03d35580c, type: 3}
   appPackageConfigAsset: {fileID: 11400000, guid: 8fbf15278f768754cae68adb13ed5dd5, type: 2}
 --- !u!224 &545512815 stripped
 RectTransform:
