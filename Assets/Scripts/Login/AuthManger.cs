@@ -332,7 +332,7 @@ public class AuthManager : MonoBehaviour
            // ********** 2. KHÔI PHỤC COMPONENTS DÙNG HÀM TÌM ẨN **********
 
            // Status Text
-           go = FindGOByNameInAll("Text"); // Tên chính xác từ Inspector
+           go = FindGOByNameInAll("Statustext"); // Tên chính xác từ Inspector
            if (go != null)
            {
                statusText = go.GetComponent<TMP_Text>();
@@ -421,7 +421,7 @@ public class AuthManager : MonoBehaviour
         });
     }
 
-    private void ShowLoginPanel()
+    public void ShowLoginPanel()
     {
         if (statusText != null) statusText.text = "";
         if (loginPanel != null) loginPanel.SetActive(true);
