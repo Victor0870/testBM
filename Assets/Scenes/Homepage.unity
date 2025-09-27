@@ -1551,6 +1551,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: invoice
       objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
+      propertyPath: MinDistance
+      value: 0.6405108
+      objectReference: {fileID: 0}
     - target: {fileID: 1418311339769207030, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 2
@@ -1593,7 +1597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 252.11
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2439,6 +2443,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sale
       objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
+      propertyPath: MinDistance
+      value: 0.6634569
+      objectReference: {fileID: 0}
     - target: {fileID: 2154721525633545885, guid: a5be154b97879411c98b7e40ddb9ecb5, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3076,6 +3084,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: shopsetting
       objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: e4c472787389e4ac8a0ef4e99159ef5e, type: 3}
+      propertyPath: MinDistance
+      value: 0.6787543
+      objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: e4c472787389e4ac8a0ef4e99159ef5e, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3090,7 +3102,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: e4c472787389e4ac8a0ef4e99159ef5e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 252.11
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: e4c472787389e4ac8a0ef4e99159ef5e, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3935,6 +3947,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Inventory
       objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
+      propertyPath: MinDistance
+      value: 0.66380084
+      objectReference: {fileID: 0}
     - target: {fileID: 2154721525633545885, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3965,7 +3981,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 260.32
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
       propertyPath: m_SizeDelta.y
@@ -4442,6 +4458,10 @@ PrefabInstance:
     - target: {fileID: 1312893091021597030, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
       propertyPath: m_Name
       value: report
+      objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
+      propertyPath: MinDistance
+      value: 0.66345686
       objectReference: {fileID: 0}
     - target: {fileID: 1418311339769207030, guid: c75e5d72c5fc64447afe4c3807c80a78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -4937,6 +4957,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: input
       objectReference: {fileID: 0}
+    - target: {fileID: 1376001818234641670, guid: 4f24817ece55346179aeda21f547e064, type: 3}
+      propertyPath: MinDistance
+      value: 0.6778091
+      objectReference: {fileID: 0}
     - target: {fileID: 1418311339769207030, guid: 4f24817ece55346179aeda21f547e064, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 2
@@ -4983,7 +5007,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: 4f24817ece55346179aeda21f547e064, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 400
+      value: 259.06
       objectReference: {fileID: 0}
     - target: {fileID: 3701746822140214150, guid: 4f24817ece55346179aeda21f547e064, type: 3}
       propertyPath: m_AnchoredPosition.x
