@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using BansheeGz.BGDatabase;
+using daBizmate;
 
 using static ShopSessionData; // Để truy cập ShopSessionData.CachedShopSettings, AppPackageConfig, GlobalAppConfig
 
@@ -17,6 +19,7 @@ public class ShopSettingManager : MonoBehaviour
 {
     // Khai báo một hằng số cho key trong PlayerPrefs
     private const string ENTER_SHOP_SETTING_EDIT_MODE_KEY = "EnterShopSettingEditMode";
+    private const string MANAGE_IMPORT_PRICE_KEY = "importPrice";
 
     [Header("UI References - ShopSettingManager")]
     public TMP_Text accountNameText; // <-- MỚI: Text hiển thị tên tài khoản người dùng
@@ -47,6 +50,10 @@ public class ShopSettingManager : MonoBehaviour
 
     [Header("Scene References")]
     public Canvas mainCanvas;
+
+    [Header("Inventory Settings UI")]
+    public Toggle manageImportPriceToggle; // <-- THÊM DÒNG NÀY
+
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -84,6 +91,8 @@ public class ShopSettingManager : MonoBehaviour
         [FirestoreProperty("licenseEndDate")] public Timestamp licenseEndDate { get; set; }
         [FirestoreProperty("packageType")] public string packageType { get; set; } // THÊM TRƯỜNG NÀY
 
+        public bool ManageImportPrice { get; set; }
+
         public ShopData() { }
     }
     // --- Kết thúc cấu trúc dữ liệu cho Shop ---
@@ -102,6 +111,8 @@ public class ShopSettingManager : MonoBehaviour
         applyVoucherButton?.onClick.AddListener(OnApplyVoucherButtonClicked);
         goToHomepageButton?.onClick.AddListener(OnGoToHomepageButtonClicked);
         logoutButton?.onClick.AddListener(OnLogoutButtonClicked);
+
+        LoadAndSetupInventorySettings();
 
         loadingPanel?.SetActive(false); // Đảm bảo loading panel ẩn ban đầu
         AuthStateChanged(this, null); // Gọi AuthStateChanged ban đầu để xử lý trạng thái user
@@ -564,4 +575,63 @@ public class ShopSettingManager : MonoBehaviour
         }
         Debug.Log("ShopSettingManager: Một panel nội dung đã được đóng.");
     }
+     void LoadAndSetupInventorySettings()
+        {
+            // 1. Tải giá trị hiện tại từ CachedShopSettings
+            // Mặc định là TRUE nếu không tìm thấy, phù hợp với logic của ShopSessionData
+            bool currentValue = CachedShopSettings?.ManageImportPrice ?? true;
+
+            // 2. Thiết lập trạng thái Toggle và gán sự kiện
+            if (manageImportPriceToggle != null)
+            {
+                // Thiết lập giá trị mà không kích hoạt sự kiện OnValueChanged để tránh lưu lại ngay lập tức
+                manageImportPriceToggle.SetIsOnWithoutNotify(currentValue);
+
+                // Gán sự kiện cho Toggle
+                manageImportPriceToggle.onValueChanged.AddListener(OnManageImportPriceToggleChanged);
+            }
+        }
+
+        private void OnManageImportPriceToggleChanged(bool value)
+        {
+            // 1. Cập nhật dữ liệu tạm thời trong cache
+            if (CachedShopSettings != null)
+            {
+                CachedShopSettings.ManageImportPrice = value;
+            }
+
+            // 2. Lưu giá trị vào Local DB (E_ShopSetting)
+            SaveManageImportPriceSetting(value);
+
+            // Cần thông báo cho InventoryDataService rằng setting đã thay đổi
+            InventoryDataService.Instance?.CheckOperatingModeAndSettings();
+        }
+
+        private void SaveManageImportPriceSetting(bool value)
+        {
+            // SỬ DỤNG CÚ PHÁP BGDatabase ĐỂ TRUY VẤN VÀ CẬP NHẬT
+            // Cần đảm bảo E_ShopSetting đã được generate và có f_value là kiểu bool/boolean
+            if (daBizmate.E_ShopSetting.MetaDefault == null)
+            {
+                Debug.LogError("BGDatabase E_ShopSetting MetaDefault is not initialized.");
+                return;
+            }
+
+            // Tìm Entity có f_name là "importPrice" (MANAGE_IMPORT_PRICE_KEY)
+            daBizmate.E_ShopSetting entity = daBizmate.E_ShopSetting.FindEntity(e => e.f_name == MANAGE_IMPORT_PRICE_KEY);
+
+            if (entity == null)
+            {
+                // Tạo mới nếu chưa tồn tại
+                entity = daBizmate.E_ShopSetting.NewEntity();
+                entity.f_name = MANAGE_IMPORT_PRICE_KEY;
+            }
+
+            // Cập nhật giá trị trực tiếp
+            entity.f_value = value; // <--- Đã sửa để gán trực tiếp giá trị boolean
+            // Debug.Log($"Giá trị f_value hiện tại (sau khi gán): {entity.f_value}"); // Thêm debug nếu cần kiểm tra kiểu dữ liệu
+
+            BGRepo.I.Save(); // Lệnh lưu vào ổ đĩa
+            Debug.Log($"Đã lưu cài đặt quản lý giá nhập (Local DB): {value}");
+        }
 }

@@ -602,5 +602,145 @@ namespace daBizmate
 			public const string name = "name";
 		}
 	}
+
+	[Preserve]
+	public partial class E_ImportSlip : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4700638696058622025UL,8879799270999088283UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		public System.String f_slipId
+		{
+			get => _f_slipId[Index];
+			set => _f_slipId[Index] = value;
+		}
+		public System.DateTime f_date
+		{
+			get => _f_date[Index];
+			set => _f_date.SetValue(this, value);
+		}
+		public System.String f_supplierId
+		{
+			get => _f_supplierId[Index];
+			set => _f_supplierId[Index] = value;
+		}
+		public System.String f_productId
+		{
+			get => _f_productId[Index];
+			set => _f_productId[Index] = value;
+		}
+		public System.Int64 f_quantity
+		{
+			get => _f_quantity[Index];
+			set => _f_quantity.SetValue(this, value);
+		}
+		public System.Int64 f_importPrice
+		{
+			get => _f_importPrice[Index];
+			set => _f_importPrice.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5402977372595443922UL, 12490858015008470914UL), () => _ufle12jhs77_f_name = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_slipId;
+		public static BansheeGz.BGDatabase.BGFieldString _f_slipId => _ufle12jhs77_f_slipId ?? (_ufle12jhs77_f_slipId = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5515630618216267165UL, 9539966860666882449UL), () => _ufle12jhs77_f_slipId = null));
+		private static BansheeGz.BGDatabase.BGFieldDateTime _ufle12jhs77_f_date;
+		public static BansheeGz.BGDatabase.BGFieldDateTime _f_date => _ufle12jhs77_f_date ?? (_ufle12jhs77_f_date = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldDateTime>(MetaDefault, new BGId(5334427369263953949UL, 7149869465230760865UL), () => _ufle12jhs77_f_date = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_supplierId;
+		public static BansheeGz.BGDatabase.BGFieldString _f_supplierId => _ufle12jhs77_f_supplierId ?? (_ufle12jhs77_f_supplierId = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4916953091411434811UL, 17489660337382607501UL), () => _ufle12jhs77_f_supplierId = null));
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_f_productId;
+		public static BansheeGz.BGDatabase.BGFieldString _f_productId => _ufle12jhs77_f_productId ?? (_ufle12jhs77_f_productId = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5127066348835128103UL, 7938503396101031099UL), () => _ufle12jhs77_f_productId = null));
+		private static BansheeGz.BGDatabase.BGFieldLong _ufle12jhs77_f_quantity;
+		public static BansheeGz.BGDatabase.BGFieldLong _f_quantity => _ufle12jhs77_f_quantity ?? (_ufle12jhs77_f_quantity = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldLong>(MetaDefault, new BGId(5347845858277424021UL, 7444745651566325382UL), () => _ufle12jhs77_f_quantity = null));
+		private static BansheeGz.BGDatabase.BGFieldLong _ufle12jhs77_f_importPrice;
+		public static BansheeGz.BGDatabase.BGFieldLong _f_importPrice => _ufle12jhs77_f_importPrice ?? (_ufle12jhs77_f_importPrice = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldLong>(MetaDefault, new BGId(4939780703367914222UL, 3607134123056558980UL), () => _ufle12jhs77_f_importPrice = null));
+		private E_ImportSlip() : base(MetaDefault) {}
+		private E_ImportSlip(BGId id) : base(MetaDefault, id) {}
+		private E_ImportSlip(BGMetaEntity meta) : base(meta) {}
+		private E_ImportSlip(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_ImportSlip FindEntity(Predicate<E_ImportSlip> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_ImportSlip> FindEntities(Predicate<E_ImportSlip> filter, List<E_ImportSlip> result=null, Comparison<E_ImportSlip> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_ImportSlip> action, Predicate<E_ImportSlip> filter=null, Comparison<E_ImportSlip> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_ImportSlip GetEntity(BGId entityId) => (E_ImportSlip) MetaDefault.GetEntity(entityId);
+		public static E_ImportSlip GetEntity(int index) => (E_ImportSlip) MetaDefault[index];
+		public static E_ImportSlip GetEntity(string entityName) => (E_ImportSlip) MetaDefault.GetEntity(entityName);
+		public static E_ImportSlip NewEntity() => (E_ImportSlip) MetaDefault.NewEntity();
+		public static E_ImportSlip NewEntity(BGId entityId) => (E_ImportSlip) MetaDefault.NewEntity(entityId);
+		public static E_ImportSlip NewEntity(Action<E_ImportSlip> callback) => (E_ImportSlip) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_ImportSlip)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_ImportSlip(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_ImportSlip(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "ImportSlip";
+			public const string name = "name";
+			public const string slipId = "slipId";
+			public const string date = "date";
+			public const string supplierId = "supplierId";
+			public const string productId = "productId";
+			public const string quantity = "quantity";
+			public const string importPrice = "importPrice";
+		}
+	}
+
+	[Preserve]
+	public partial class E_ShopSetting : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ?? (_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5490717805051477799UL,11580462634351211455UL), () => _metaDefault = null));
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String f_name
+		{
+			get => _f_name[Index];
+			set => _f_name[Index] = value;
+		}
+		public System.Boolean f_value
+		{
+			get => _f_value[Index];
+			set => _f_value.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_f_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _f_name => _ufle12jhs77_f_name ?? (_ufle12jhs77_f_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5296639181257030056UL, 8306520768333722020UL), () => _ufle12jhs77_f_name = null));
+		private static BansheeGz.BGDatabase.BGFieldBool _ufle12jhs77_f_value;
+		public static BansheeGz.BGDatabase.BGFieldBool _f_value => _ufle12jhs77_f_value ?? (_ufle12jhs77_f_value = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldBool>(MetaDefault, new BGId(5445006611410928825UL, 2377243252371168134UL), () => _ufle12jhs77_f_value = null));
+		private E_ShopSetting() : base(MetaDefault) {}
+		private E_ShopSetting(BGId id) : base(MetaDefault, id) {}
+		private E_ShopSetting(BGMetaEntity meta) : base(meta) {}
+		private E_ShopSetting(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static E_ShopSetting FindEntity(Predicate<E_ShopSetting> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<E_ShopSetting> FindEntities(Predicate<E_ShopSetting> filter, List<E_ShopSetting> result=null, Comparison<E_ShopSetting> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<E_ShopSetting> action, Predicate<E_ShopSetting> filter=null, Comparison<E_ShopSetting> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static E_ShopSetting GetEntity(BGId entityId) => (E_ShopSetting) MetaDefault.GetEntity(entityId);
+		public static E_ShopSetting GetEntity(int index) => (E_ShopSetting) MetaDefault[index];
+		public static E_ShopSetting GetEntity(string entityName) => (E_ShopSetting) MetaDefault.GetEntity(entityName);
+		public static E_ShopSetting NewEntity() => (E_ShopSetting) MetaDefault.NewEntity();
+		public static E_ShopSetting NewEntity(BGId entityId) => (E_ShopSetting) MetaDefault.NewEntity(entityId);
+		public static E_ShopSetting NewEntity(Action<E_ShopSetting> callback) => (E_ShopSetting) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((E_ShopSetting)entity)));
+
+		[Preserve]
+		public class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new E_ShopSetting(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new E_ShopSetting(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "ShopSetting";
+			public const string name = "name";
+			public const string value = "value";
+		}
+	}
 }
 #pragma warning restore 414

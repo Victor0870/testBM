@@ -5,11 +5,7 @@ using Firebase.Firestore; // Cần cho Timestamp
 using static ShopSettingManager; // Cần để sử dụng ShopData class
 
 // Đảm bảo bạn có đủ các using cho các class mới
-// Nếu PackageConfigData.cs và GlobalAppConfigData nằm trong một namespace khác,
-// bạn cần thêm using đó vào đây. Ví dụ: using YourProjectNamespace.Config;
-// Tuy nhiên, nếu chúng không có namespace nào, thì không cần thêm.
-// Giả định rằng GlobalAppConfigData và PackageConfig không có namespace riêng hoặc nằm trong Global namespace.
-
+// ...
 
 public static class ShopSessionData
 {
@@ -99,6 +95,10 @@ public static class ShopSessionData
             // Thêm tải packageType từ PlayerPrefs
             CachedShopSettings.packageType = PlayerPrefs.GetString("PackageType", "");
 
+            // BỔ SUNG: Tải ManageImportPrice (lưu dưới dạng Int)
+            // Mặc định là TRUE nếu không tìm thấy key (1)
+            CachedShopSettings.ManageImportPrice = PlayerPrefs.GetInt("ManageImportPrice", 1) == 1;
+
             long licenseEndUnix = 0;
             if (long.TryParse(PlayerPrefs.GetString("LicenseEndDate", "0"), out licenseEndUnix))
             {
@@ -152,6 +152,9 @@ public static class ShopSessionData
         // Thêm lưu packageType vào PlayerPrefs
         PlayerPrefs.SetString("PackageType", shopData.packageType);
 
+        // BỔ SUNG: Lưu ManageImportPrice (sử dụng 1 cho True, 0 cho False)
+        PlayerPrefs.SetInt("ManageImportPrice", shopData.ManageImportPrice ? 1 : 0);
+
         if (shopData.licenseEndDate != null)
         {
             PlayerPrefs.SetString("LicenseEndDate", shopData.licenseEndDate.ToDateTimeOffset().ToUnixTimeSeconds().ToString());
@@ -176,14 +179,7 @@ public static class ShopSessionData
         CachedShopSettings = null;
         GlobalAppConfig = null; // Xóa cả GlobalAppConfig khi đăng xuất
 
-        // PlayerPrefs.DeleteAll(); // Cần cẩn thận khi dùng DeleteAll nếu bạn có lưu các setting khác không liên quan đến user
-                                // Nếu dùng DeleteAll, không cần xóa từng key nữa:
-                                // PlayerPrefs.DeleteKey("CachedUserId");
-                                // ... (các key khác)
-
-        // Để an toàn hơn, hãy xóa từng key liên quan đến session của ShopBizmate
-        // nếu bạn có những PlayerPrefs key khác không muốn bị xóa.
-        // Hoặc chỉ xóa những key đã set trong SaveShopDataToPlayerPrefs.
+        // Xóa các key liên quan đến session
         PlayerPrefs.DeleteKey("CachedUserId");
         PlayerPrefs.DeleteKey("ShopName");
         PlayerPrefs.DeleteKey("PhoneNumber");
@@ -191,15 +187,18 @@ public static class ShopSessionData
         PlayerPrefs.DeleteKey("Industry");
         PlayerPrefs.DeleteKey("EInvoiceProvider");
         PlayerPrefs.DeleteKey("EInvoiceUser");
-        PlayerPrefs.DeleteKey("EInvoicePass"); // Mặc dù không nên lưu, nhưng nếu đã lưu thì xóa
+        PlayerPrefs.DeleteKey("EInvoicePass");
         PlayerPrefs.DeleteKey("InvoiceSerial");
         PlayerPrefs.DeleteKey("InvoiceForm");
         PlayerPrefs.DeleteKey("InvoiceType");
         PlayerPrefs.DeleteKey("FptAccessToken");
         PlayerPrefs.DeleteKey("FptTokenExpiryTime");
-        PlayerPrefs.DeleteKey("PackageType"); // Xóa key mới
-        PlayerPrefs.DeleteKey("LicenseEndDate"); // Xóa key cuối cùng
-        // Nếu có key nào khác mà AuthManager hay ShopSettingManager set, hãy thêm vào đây.
+        PlayerPrefs.DeleteKey("PackageType");
+
+        // BỔ SUNG: Xóa key ManageImportPrice
+        PlayerPrefs.DeleteKey("ManageImportPrice");
+
+        PlayerPrefs.DeleteKey("LicenseEndDate");
 
         PlayerPrefs.Save();
         Debug.Log("ShopSessionData: Cleared all cached data and PlayerPrefs.");

@@ -68,8 +68,14 @@ public class InventoryManager : MonoBehaviour
 
     private ProductData currentEditingProduct;
 
-    [Header("Import Stock Panel")]
-    public ImportStockPanelManager importStockPanelManager;
+    [Header("Import Slip Creation Panel")]
+    // Đảm bảo bạn gán script ImportSlipCreationPanelManager vào trường này trong Inspector
+    public ImportSlipCreationPanelManager importSlipCreationPanelManager;
+
+
+    [Header("Import Slip History")]
+    public Button openImportSlipHistoryButton; // Nút mở lịch sử phiếu nhập
+    public ImportSlipHistoryPanelManager importSlipHistoryPanelManager; // Tham chiếu đến Panel Lịch sử
 
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
@@ -133,9 +139,15 @@ public class InventoryManager : MonoBehaviour
         skipSampleButton?.onClick.AddListener(SkipSampleInventory);
 
         // Gán listener cho nút mở panel thêm sản phẩm mới
-        //if (openAddProductPanelButton != null) // THÊM DÒNG NÀY
+        //if (openAddProductPanelButton != null)
         {
-            openAddProductPanelButton.onClick.AddListener(ShowAddProductPanel); // THÊM DÒNG NÀY
+            openAddProductPanelButton.onClick.AddListener(ShowAddProductPanel);
+        }
+
+        // THÊM: Gán listener cho nút mở lịch sử phiếu nhập
+        if (openImportSlipHistoryButton != null)
+        {
+            openImportSlipHistoryButton.onClick.AddListener(ShowImportSlipHistoryPanel);
         }
 
         saveEditProductButton?.onClick.AddListener(SaveEditedProduct);
@@ -215,7 +227,7 @@ public class InventoryManager : MonoBehaviour
         //if (saveEditProductButton != null) saveEditProductButton.interactable = interactable; [cite: 6]
         //if (cancelEditProductButton != null) cancelEditProductButton.interactable = interactable; [cite: 6]
         //if (deleteProductButton != null) deleteProductButton.interactable = interactable; [cite: 6]
-        if (importStockPanelManager != null) importStockPanelManager.SetInteractable(interactable); // Nếu ImportStockPanelManager có hàm SetInteractable
+        //if (importStockPanelManager != null) importStockPanelManager.SetInteractable(interactable); // Nếu ImportStockPanelManager có hàm SetInteractable
 
         // Các dropdown lọc
         //if (categoryFilterDropdown != null) categoryFilterDropdown.interactable = interactable; [cite: 6]
@@ -753,18 +765,40 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    // Thay thế hàm này trong InventoryManager.cs
+
     private void HandleImportStockRequest(ProductData productToImport)
     {
-        if (importStockPanelManager != null)
+        // Sử dụng lớp mới ImportSlipCreationPanelManager
+        if (importSlipCreationPanelManager != null)
         {
-            Debug.Log($"Yêu cầu nhập kho cho sản phẩm: {productToImport.productName} (ID: {productToImport.productId})");
-            importStockPanelManager.ShowPanel(productToImport, () => {
-                Debug.Log("Tồn kho đã được cập nhật từ ImportStockPanelManager.");
+            Debug.Log($"Yêu cầu tạo phiếu nhập kho QUICK ADD cho sản phẩm: {productToImport.productName} (ID: {productToImport.productId})");
+
+            // Gọi ShowPanel của panel tạo phiếu mới, truyền sản phẩm để kích hoạt Quick Add Mode
+            importSlipCreationPanelManager.ShowPanel(productToImport, () => {
+                 Debug.Log("Đã hoàn thành tạo phiếu nhập (Callback).");
+                 // InventoryDataService sẽ tự động kích hoạt OnProductsLoaded để cập nhật UI
             });
         }
         else
         {
-            Debug.LogError("ImportStockPanelManager chưa được gán trong Inspector của InventoryManager.");
+            Debug.LogError("ImportSlipCreationPanelManager chưa được gán. Vui lòng kiểm tra lại Inspector.");
         }
     }
+    // Trong InventoryManager.cs, thêm phương thức mới này
+
+    public void ShowImportSlipHistoryPanel()
+    {
+        if (importSlipHistoryPanelManager != null)
+        {
+            // Gọi ShowPanel của panel lịch sử
+            importSlipHistoryPanelManager.ShowPanel();
+        }
+        else
+        {
+            Debug.LogError("ImportSlipHistoryPanelManager chưa được gán trong Inspector.");
+        }
+    }
+
+
 }
