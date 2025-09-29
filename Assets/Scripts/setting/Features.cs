@@ -7,6 +7,6 @@ public enum AppFeature
     Inventory,      // Quản lý tồn kho
     Reports,        // Báo cáo lỗ lãi
     EInvoice,       // Hóa đơn điện tử
-    MultiUser,      // Đa người dùng
+    CloudSync,       // Đa người dùng
     // ... Thêm các tính năng khác vào đây khi cần
 }

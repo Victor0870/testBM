@@ -1,3 +1,4 @@
+// File: Scripts/Sale/SalesManager.cs
 using UnityEngine;
 using System.Collections;
 using Firebase.Auth;
@@ -167,16 +168,19 @@ public class SalesManager : MonoBehaviour
             cartManager.OnCartChanged += finalizeTransactionManager.UpdateCartSummaryUI;
         }
 
-        // Truyền các dependency cho SalesFptInvoiceManager
+        // Truyền các dependency cho SalesFptInvoiceManager (FIX LỖI CS1501)
         if (fptInvoiceManager != null)
         {
-            fptInvoiceManager.Initialize(db, currentUser, userSalesCollection, FptEInvoiceApiClient.Instance, StatusPopupManager.Instance);
+            // Truyền ShopData (CachedShopSettings) thay vì 5 đối số cũ
+            fptInvoiceManager.Initialize(db, currentUser, userSalesCollection, ShopSessionData.CachedShopSettings);
         }
 
         // Truyền các dependency cho SalesFinalizeTransaction
         if (finalizeTransactionManager != null)
         {
-            finalizeTransactionManager.Initialize(db, currentUser, userSalesCollection, userProductsCollection,
+            // OLD: finalizeTransactionManager.Initialize(db, currentUser, userSalesCollection, userProductsCollection, customerManager, cartManager, fptInvoiceManager, StatusPopupManager.Instance, customerManager.customerLookupStatusText);
+            // Cần sửa lại cho đúng 9 arguments
+             finalizeTransactionManager.Initialize(db, currentUser, userSalesCollection, userProductsCollection,
                                                   customerManager, cartManager, fptInvoiceManager, StatusPopupManager.Instance,
                                                   customerManager.customerLookupStatusText); // Truyền tham chiếu Text
         }
@@ -247,7 +251,7 @@ public class SalesManager : MonoBehaviour
 
         SetSalesFeaturesInteractable(true); // Mặc định kích hoạt nếu có salesFeature
 
-        // Kiểm soát nút xuất hóa đơn FPT dựa trên tính năng EInvoice
+        // Kiểm soát nút xuất hóa đơn FPT dựa trên tính năng EInvoice (FIX LỖI CS1061)
         if (fptInvoiceManager != null && fptInvoiceManager.exportInvoiceButton != null)
         {
             fptInvoiceManager.exportInvoiceButton.interactable = hasEInvoiceFeature;
@@ -314,6 +318,7 @@ public class SalesManager : MonoBehaviour
 
     public void OnExportInvoiceButtonClicked()
     {
+        // FIX LỖI CS1061: Gọi phương thức đã được thêm vào SalesFptInvoiceManager
         fptInvoiceManager?.OnExportInvoiceButtonClicked();
     }
 

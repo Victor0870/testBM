@@ -1,4 +1,4 @@
-// File: SalesFinalizeTransaction.cs
+// File: Scripts/Sale/SalesFinalizeTransaction.cs
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -13,7 +13,8 @@ using System.Threading.Tasks; // Cần cho async/await
 // Đảm bảo các using cần thiết từ SalesManager được đưa vào đây
 using static ShopSessionData; // Để truy cập CachedShopSettings, AppPackageConfig
 using static ShopSettingManager; // Cần cho ShopData class
-// Không cần using SimpleJSON ở đây vì SalesFptInvoiceManager đã xử lý nó
+// ĐÃ XÓA: using SalesDataService; // CS0138
+// THÊM USING EXPLICIT CHO SALESDATASERVICE CLASS NẾU NÓ Ở ROOT NAMESPACE
 
 public class SalesFinalizeTransaction : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class SalesFinalizeTransaction : MonoBehaviour
     private SalesFptInvoiceManager _fptInvoiceManager; // Để xử lý hóa đơn FPT
 
     private TMP_Text _customerLookupStatusText; // Để cập nhật trạng thái tra cứu khách hàng
-     private bool listenersInitialized = false;
+    private bool listenersInitialized = false;
 
     private const double TAX_RATE = 0.10;
 
@@ -60,7 +61,7 @@ public class SalesFinalizeTransaction : MonoBehaviour
         _customerLookupStatusText = customerLookupStatusTextRef; // Gán tham chiếu
 
         // Gán listener cho các nút
-        if (!listenersInitialized) // <-- THÊM ĐIỀU KIỆN NÀY
+        if (!listenersInitialized)
         {
             if (completeSaleButton != null) completeSaleButton.onClick.AddListener(OnCompleteSaleButtonClicked);
             if (cancelSaleButton != null) cancelSaleButton.onClick.AddListener(OnCancelSaleButtonClicked);
@@ -105,19 +106,22 @@ public class SalesFinalizeTransaction : MonoBehaviour
 
     public async void OnCompleteSaleButtonClicked()
     {
-        // --- 1. Kiểm tra điều kiện ban đầu (đã di chuyển từ SalesManager) ---
+        // --- 1. Kiểm tra điều kiện ban đầu ---
 
         string currentPackageName = ShopSessionData.CachedShopSettings?.packageType;
         bool hasSalesFeature = ShopSessionData.AppPackageConfig != null && ShopSessionData.AppPackageConfig.HasFeature(currentPackageName, AppFeature.Sales);
+        // Kiểm tra quyền truy cập tồn kho và Cloud Sync
         bool hasInventoryFeature = ShopSessionData.AppPackageConfig != null && ShopSessionData.AppPackageConfig.HasFeature(currentPackageName, AppFeature.Inventory);
-        bool hasEInvoiceFeature = ShopSessionData.AppPackageConfig != null && ShopSessionData.AppPackageConfig.HasFeature(currentPackageName, AppFeature.EInvoice);
+
+        bool isCloudSyncEnabled = SalesDataService.Instance != null && SalesDataService.Instance.IsCloudSyncEnabled; // Sửa lỗi tiền tố
 
         if (_cartManager == null || _cartManager.ProductsInCart == null || _cartManager.ProductsInCart.Count == 0)
         {
             _statusPopupManager.ShowPopup("Giỏ hàng trống. Không thể hoàn tất đơn hàng.");
             return;
         }
-        if (_currentUser == null)
+        // Kiểm tra người dùng Firebase chỉ khi cần Cloud Sync
+        if (isCloudSyncEnabled && _currentUser == null)
         {
             _statusPopupManager.ShowPopup("Lỗi: Người dùng chưa đăng nhập. Vui lòng đăng nhập lại.");
             return;
@@ -135,7 +139,7 @@ public class SalesFinalizeTransaction : MonoBehaviour
             SetButtonsInteractable(true);
             return;
         }
-        
+
         // --- 2. Lấy và Xác thực thông tin khách hàng ---
         CustomerData finalCustomerDataFromUI = _customerManager.GetCustomerDataFromUI(); // Lấy data từ UI
 
@@ -155,50 +159,25 @@ public class SalesFinalizeTransaction : MonoBehaviour
         if (_customerLookupStatusText != null) _customerLookupStatusText.text = "Đang kiểm tra thông tin khách hàng...";
         SetButtonsInteractable(false); // Vô hiệu hóa các nút
 
-        // --- 3. Lưu/Cập nhật khách hàng vào Firestore ---
-        CustomerData savedCustomerData = null; // Khách hàng sau khi đã lưu/cập nhật vào Firestore
+        // --- 3. LƯU/CẬP NHẬT KHÁCH HÀNG (SỬ DỤNG SALESDATASERVICE) ---
+        CustomerData savedCustomerData = null; // Khách hàng sau khi đã lưu/cập nhật
         try
         {
-            if (_customerManager.GetCurrentCustomerData() == null || string.IsNullOrEmpty(_customerManager.GetCurrentCustomerData().customerId))
-            {
-                // Khách hàng mới: Add vào Firestore
-                DocumentReference newCustomerDocRef = await SalesManager.Instance.db
-                    .Collection("shops")
-                    .Document(SalesManager.Instance.currentUser.UserId)
-                    .Collection("customers")
-                    .AddAsync(finalCustomerDataFromUI);
-                savedCustomerData = finalCustomerDataFromUI;
-                savedCustomerData.customerId = newCustomerDocRef.Id;
-                Debug.Log($"Đã lưu khách hàng mới: {savedCustomerData.name} (ID: {savedCustomerData.customerId})");
-            }
-            else
-            {
-                // Khách hàng đã tồn tại: Cập nhật nếu có thay đổi và đang ở chế độ chỉnh sửa
-                // Sử dụng lại logic kiểm tra thay đổi từ SalesManager gốc để tránh update không cần thiết
-                CustomerData existingCustomer = _customerManager.GetCurrentCustomerData();
-                if (existingCustomer.name != finalCustomerDataFromUI.name ||
-                    existingCustomer.address != finalCustomerDataFromUI.address ||
-                    existingCustomer.taxId != finalCustomerDataFromUI.taxId ||
-                    existingCustomer.companyName != finalCustomerDataFromUI.companyName ||
-                    existingCustomer.customerType != finalCustomerDataFromUI.customerType ||
-                    existingCustomer.idNumber != finalCustomerDataFromUI.idNumber)
-                {
-                    DocumentReference customerDocRef = SalesManager.Instance.db
-                        .Collection("shops")
-                        .Document(SalesManager.Instance.currentUser.UserId)
-                        .Collection("customers")
-                        .Document(existingCustomer.customerId);
-                    await customerDocRef.SetAsync(finalCustomerDataFromUI); // SetAsync sẽ ghi đè
-                    savedCustomerData = finalCustomerDataFromUI;
-                    savedCustomerData.customerId = existingCustomer.customerId; // Giữ lại ID cũ
-                    Debug.Log($"Đã cập nhật thông tin khách hàng: {savedCustomerData.name} (ID: {savedCustomerData.customerId})");
-                }
-                else
-                {
-                    savedCustomerData = existingCustomer; // Không có thay đổi, dùng dữ liệu cũ
-                }
-            }
-            _customerManager.SetCurrentCustomerData(savedCustomerData); // Cập nhật lại trong CustomerManager
+            // Lấy ID khách hàng hiện tại (Local ID hoặc Cloud ID)
+            string existingId = _customerManager.GetCurrentCustomerData()?.customerId;
+
+            // Đặt ID Khách hàng cho dữ liệu mới nhất từ UI
+            finalCustomerDataFromUI.customerId = existingId;
+
+            // GỌI SALESDATASERVICE ĐỂ LƯU CẢ LÊN CLOUD VÀ XUỐNG LOCAL DB
+            string finalCustomerId = await SalesDataService.Instance.SaveCustomerDataAsync(finalCustomerDataFromUI); // Sửa lỗi tiền tố
+
+            // Cập nhật lại đối tượng CustomerData với ID cuối cùng (ID Cloud/Local)
+            finalCustomerDataFromUI.customerId = finalCustomerId;
+            savedCustomerData = finalCustomerDataFromUI;
+
+            _customerManager.SetCurrentCustomerData(savedCustomerData);
+            Debug.Log($"Đã lưu khách hàng thành công với ID: {finalCustomerId}. Nguồn: {(isCloudSyncEnabled ? "Cloud/Local" : "Local Only")}");
         }
         catch (Exception e)
         {
@@ -220,7 +199,8 @@ public class SalesFinalizeTransaction : MonoBehaviour
         {
             if (hasInventoryFeature)
             {
-                ProductData actualInventoryProduct = _cartManager.GetProductFromAllUserProducts(productInCart.productId); // Lấy sản phẩm từ danh sách tổng
+                // Kiểm tra tồn kho chỉ khi có tính năng Inventory
+                ProductData actualInventoryProduct = _cartManager.GetProductFromAllUserProducts(productInCart.productId);
                 if (actualInventoryProduct == null || productInCart.stock > actualInventoryProduct.stock)
                 {
                     _statusPopupManager.ShowPopup($"Không đủ hàng trong kho cho {productInCart.productName}. Tồn kho: {(actualInventoryProduct != null ? actualInventoryProduct.stock : 0)}. Yêu cầu: {productInCart.stock}.");
@@ -228,7 +208,7 @@ public class SalesFinalizeTransaction : MonoBehaviour
                     return;
                 }
             }
-            
+
             saleItems.Add(new SaleItem
             {
                 productId = productInCart.productId,
@@ -257,15 +237,25 @@ public class SalesFinalizeTransaction : MonoBehaviour
 
         if (_customerLookupStatusText != null) _customerLookupStatusText.text = "Đang hoàn tất đơn hàng...";
 
-        // --- 5. Lưu SaleData và Cập nhật tồn kho ---
+        // --- 5. LƯU SALEDATA & CẬP NHẬT TỒN KHO (SỬ DỤNG SALESDATASERVICE) ---
         DocumentReference newSaleDocRef = null;
         try
         {
-            newSaleDocRef = await _userSalesCollection.AddAsync(newSale);
-            newSale.saleId = newSaleDocRef.Id;
-            Debug.Log($"Đã lưu đơn hàng thành công vào Firestore với ID: {newSale.saleId}");
+            // GỌI SALESDATASERVICE ĐỂ LƯU CẢ LÊN CLOUD VÀ XUỐNG LOCAL DB
+            string finalSaleId = await SalesDataService.Instance.SaveSaleDataAsync(newSale); // Sửa lỗi tiền tố
+            newSale.saleId = finalSaleId;
 
-            if (hasInventoryFeature)
+            // Nếu là Cloud Sync, chúng ta sẽ cần lấy DocumentReference để truyền cho FptInvoiceManager
+            if (isCloudSyncEnabled)
+            {
+                newSaleDocRef = _userSalesCollection.Document(finalSaleId);
+            }
+
+            Debug.Log($"Đã lưu đơn hàng thành công với ID: {newSale.saleId}. Nguồn: {(isCloudSyncEnabled ? "Cloud/Local" : "Local Only")}");
+
+            // Logic TRỪ TỒN KHO (Chỉ chạy trên Cloud nếu CloudSync được bật)
+            // Logic trừ kho Local sẽ nằm trong SalesDataService nếu cần
+            if (hasInventoryFeature && isCloudSyncEnabled)
             {
                 WriteBatch batch = _db.StartBatch();
                 foreach (var cartProduct in _cartManager.ProductsInCart.Values)
@@ -274,12 +264,13 @@ public class SalesFinalizeTransaction : MonoBehaviour
                     batch.Update(productDocRef, "stock", FieldValue.Increment(-cartProduct.stock));
                 }
                 await batch.CommitAsync();
-                Debug.Log("Đã cập nhật tồn kho thành công.");
+                Debug.Log("Đã cập nhật tồn kho FIREBASE thành công.");
             }
             else
             {
-                Debug.Log("Gói hiện tại không quản lý tồn kho. Bỏ qua việc trừ tồn kho.");
+                Debug.Log("Gói hiện tại không quản lý tồn kho Cloud. Bỏ qua việc trừ tồn kho Firebase.");
             }
+
         }
         catch (Exception e)
         {
@@ -294,14 +285,16 @@ public class SalesFinalizeTransaction : MonoBehaviour
             return;
         }
 
-        // --- 6. Xử lý Hóa đơn điện tử FPT (nếu có quyền) ---
-        if (_fptInvoiceManager != null)
+        // --- 6. Xử lý Hóa đơn điện tử FPT (Chỉ chạy khi có Cloud Sync) ---
+        if (_fptInvoiceManager != null && isCloudSyncEnabled)
         {
-            var (fptSuccess, fptInvId, fptInvSeq, fptInvSerial, fptLookupLink, fptErrorMsg) = 
+            var (fptSuccess, fptInvId, fptInvSeq, fptInvSerial, fptLookupLink, fptErrorMsg) =
                 await _fptInvoiceManager.ProcessFptInvoiceCreation(savedCustomerData, _cartManager.ProductsInCart, newSale, newSaleDocRef);
 
             if (fptSuccess)
             {
+                // Cập nhật lại SaleData cục bộ với thông tin hóa đơn FPT
+                await SalesDataService.Instance.UpdateSaleDataLocallyWithInvoiceInfo(newSale); // Sửa lỗi tiền tố
                 Debug.Log("Đơn hàng đã hoàn tất thành công! Hóa đơn điện tử đã được xử lý.");
             }
             else
@@ -311,11 +304,17 @@ public class SalesFinalizeTransaction : MonoBehaviour
                 _statusPopupManager.ShowPopup($"Đơn hàng đã hoàn tất, NHƯNG LỖI Hóa đơn điện tử FPT: {fptErrorMsg}");
             }
         }
-        else
+        else if (isCloudSyncEnabled) // Nếu CloudSync bật nhưng FPT Manager chưa gán
         {
-            Debug.LogWarning("SalesFinalizeTransaction: FPT eInvoice Manager chưa được gán. Bỏ qua việc tạo hóa đơn điện tử FPT.");
-            _statusPopupManager.ShowPopup("Đơn hàng đã hoàn tất thành công! (Không tạo hóa đơn FPT)");
+            Debug.LogWarning("SalesFinalizeTransaction: Bỏ qua tạo hóa đơn FPT vì Manager chưa được gán.");
+            _statusPopupManager.ShowPopup("Đơn hàng đã hoàn tất thành công!");
         }
+        else // Local Only Mode
+        {
+            Debug.Log("SalesFinalizeTransaction: Hoàn tất giao dịch ở chế độ Local Only.");
+            _statusPopupManager.ShowPopup("Đơn hàng đã hoàn tất thành công! (Lưu cục bộ)");
+        }
+
 
         // --- 7. Hoàn tất giao dịch ---
         Debug.Log("Đơn hàng Bizmate đã hoàn tất quá trình xử lý.");
@@ -330,9 +329,8 @@ public class SalesFinalizeTransaction : MonoBehaviour
     {
         _cartManager.ClearCart(); // Xóa giỏ hàng thông qua CartManager
         _customerManager.ClearCustomerInfo(); // Xóa thông tin khách hàng thông qua CustomerManager
-        
+
         // Reset các trạng thái UI khác nếu cần
-        // _customerLookupStatusText.text = ""; // Already handled in OnCompleteSaleButtonClicked.finally
         Debug.Log("Đã hủy đơn hàng và reset.");
     }
 

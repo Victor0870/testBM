@@ -1,178 +1,180 @@
-// File: SalesFptInvoiceManager.cs
+// File: Scripts/Sale/SalesFptInvoiceManager.cs
 using UnityEngine;
-using Firebase.Firestore;
-using Firebase.Auth; // Cần cho FirebaseUser
 using System;
 using System.Collections.Generic;
-using System.Linq; // Cần cho Sum
-using UnityEngine.UI;
 using System.Threading.Tasks;
-
-// Using cho FPT eInvoice và SimpleJSON
-using SimpleJSON;
-using static ShopSessionData; // Để truy cập CachedShopSettings, AppPackageConfig
-using static ShopSettingManager; // Cần cho ShopData class
+using Firebase.Firestore;
+using Firebase.Auth;
+using daBizmate;
+using static ShopSessionData;
+using static ShopSettingManager;
+using UnityEngine.UI; // <-- SỬA LỖI CS0246: Thêm using cho Button
+using System.Linq;
 
 public class SalesFptInvoiceManager : MonoBehaviour
 {
-    [Header("FPT eInvoice Integration - SalesFptInvoiceManager")]
-    public Button exportInvoiceButton; // Nút Xuất hóa đơn (nếu nó không được điều khiển từ SalesManager chính)
+    // --- KHAI BÁO THÀNH PHẦN MỚI ---
+    [Header("Dependencies")]
+    public FptEInvoiceApiClient apiClient;
+    public StatusPopupManager statusPopupManager;
 
-    // Tham chiếu đến StatusPopupManager (được truyền từ SalesManager chính)
-    private StatusPopupManager _statusPopupManager;
-    // Tham chiếu đến Firebase (được truyền từ SalesManager chính)
+    // --- BỔ SUNG ĐỂ SỬA LỖI CS1061 ---
+    [Header("UI Control")]
+    public Button exportInvoiceButton; // Re-added field
+
     private FirebaseFirestore _db;
     private FirebaseUser _currentUser;
-    private CollectionReference _userSalesCollection; // Để cập nhật SaleData với thông tin hóa đơn FPT
-    private FptEInvoiceApiClient _fptApiClient; // Tham chiếu đến FptEInvoiceApiClient
+    private CollectionReference _userSalesCollection;
 
-    private const double TAX_RATE = 0.10; // Tỷ lệ thuế.
+    // Configs từ ShopSettingManager (Đã bỏ các trường Button)
+    private string fptAccount;
+    private string fptPassword;
+    private string invoiceSerial;
+    private string invoiceForm;
+    private string invoiceType;
+    private string taxId;
 
-    // Phương thức khởi tạo, được gọi từ SalesManager chính
-    public void Initialize(FirebaseFirestore dbInstance, FirebaseUser currentUser, CollectionReference userSalesCollection, FptEInvoiceApiClient fptApiClient, StatusPopupManager statusPopupManager)
+    private const double TAX_RATE = 0.10; // Cần cho hàm ánh xạ tạm thời
+
+    /// <summary>
+    /// Phương thức khởi tạo mới, chỉ nhận ShopData thay vì các tham chiếu cũ
+    /// </summary>
+    public void Initialize(FirebaseFirestore dbInstance, FirebaseUser currentUser, CollectionReference userSalesCollection, ShopData shopData)
     {
         _db = dbInstance;
         _currentUser = currentUser;
         _userSalesCollection = userSalesCollection;
-        _fptApiClient = fptApiClient;
-        _statusPopupManager = statusPopupManager;
 
-        // Gán listener cho nút Xuất hóa đơn nếu nó được quản lý bởi Manager này
-        if (exportInvoiceButton != null)
-        {
-            exportInvoiceButton.onClick.AddListener(OnExportInvoiceButtonClicked);
-        }
+        // Tải các thông tin cấu hình HĐĐT từ ShopData
+        fptAccount = shopData.eInvoiceUser;
+        fptPassword = shopData.eInvoicePass;
+        invoiceSerial = shopData.invoiceSerial;
+        invoiceForm = shopData.invoiceForm;
+        invoiceType = shopData.invoiceType;
+        taxId = shopData.taxId;
+
+        Debug.Log("SalesFptInvoiceManager đã được khởi tạo.");
     }
 
-    // Phương thức này có thể được gọi từ SalesManager chính sau khi một giao dịch hoàn tất
-    public async Task<(bool success, string fptInvoiceId, string fptInvoiceSeq, string fptInvoiceSerial, string fptLookupLink, string errorMessage)>
-           ProcessFptInvoiceCreation(CustomerData customer, Dictionary<string, ProductData> productsInCart, SaleData savedSaleData, DocumentReference newSaleDocRef)
+    /// <summary>
+    /// Phương thức cốt lõi xử lý việc tạo và phát hành hóa đơn FPT.
+    /// </summary>
+    public async Task<(bool success, string fptInvId, string fptInvSeq, string fptInvSerial, string fptLookupLink, string fptErrorMsg)>
+    ProcessFptInvoiceCreation(CustomerData customer, Dictionary<string, ProductData> productsInCart, SaleData saleData, DocumentReference saleDocRef)
     {
-        // Kiểm tra quyền truy cập tính năng Hóa đơn điện tử (EInvoice)
-        string currentPackageName = ShopSessionData.CachedShopSettings?.packageType;
-        bool hasEInvoiceFeature = ShopSessionData.AppPackageConfig != null &&
-                                  ShopSessionData.AppPackageConfig.HasFeature(currentPackageName, AppFeature.EInvoice);
-
-        // Kiểm tra cấu hình nhà cung cấp hóa đơn điện tử là FPT
-        bool isFptConfigured = ShopSessionData.CachedShopSettings?.eInvoiceProvider == "FPT";
-
-        if (!hasEInvoiceFeature)
+        // 1. KIỂM TRA ĐIỀU KIỆN TIÊN QUYẾT
+        if (saleData == null || _currentUser == null || apiClient == null || statusPopupManager == null)
         {
-            return (false, null, null, null, null, $"Gói hiện tại: '{currentPackageName}' không có tính năng Hóa đơn điện tử. Vui lòng nâng cấp gói.");
-        }
-        if (!isFptConfigured)
-        {
-            return (false, null, null, null, null, "Bạn chưa cấu hình nhà cung cấp hóa đơn điện tử hoặc nhà cung cấp hiện tại không phải FPT. Vui lòng cấu hình trong Cài đặt Shop.");
+            return (false, null, null, null, null, "Hệ thống chưa được khởi tạo đầy đủ.");
         }
 
-        if (_fptApiClient == null)
+        if (!AppPackageConfig.HasFeature(CachedShopSettings?.packageType, AppFeature.EInvoice))
         {
-            return (false, null, null, null, null, "Lỗi nội bộ: FPT eInvoice API Client chưa được khởi tạo.");
+            return (false, null, null, null, null, "Gói hiện tại không hỗ trợ tính năng Hóa đơn điện tử.");
         }
 
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        if (string.IsNullOrEmpty(fptAccount) || string.IsNullOrEmpty(fptPassword) || string.IsNullOrEmpty(invoiceSerial))
         {
-            return (false, null, null, null, null, "Không có kết nối Internet. Vui lòng kiểm tra mạng và thử lại.");
+            return (false, null, null, null, null, "Cấu hình Hóa đơn điện tử (Tài khoản/Mật khẩu/Serial) chưa được thiết lập.");
         }
 
-        Debug.Log("SalesFptInvoiceManager: Đang tạo dữ liệu hóa đơn cho FPT eInvoice...");
-        FptInvoiceData fptInvoice = CreateFptInvoiceData(customer, productsInCart);
-
-        Debug.Log($"SalesFptInvoiceManager: Gửi yêu cầu tạo hóa đơn FPT đến URL: {_fptApiClient.fptDefaultConfig.createInvoiceUrl}");
-        Debug.Log($"SalesFptInvoiceManager: FPT Invoice JSON Payload: {fptInvoice.ToJsonNode().SaveToJSON(SimpleJSON.JSONTextMode.Indent)}");
-
-        var (fptSuccess, fptResponseData, fptErrorMessage) = await _fptApiClient.SendApiRequestAsync(
-            _fptApiClient.fptDefaultConfig.createInvoiceUrl, "POST", fptInvoice.ToJsonNode());
-
-        if (fptSuccess)
+        // 2. TÌM THAM CHIẾU DOCUMENT
+        if (saleDocRef == null && !string.IsNullOrEmpty(saleData.saleId))
         {
-            Debug.Log("SalesFptInvoiceManager: API FPT eInvoice gọi thành công. Phản hồi: " + fptResponseData);
-            _statusPopupManager.ShowPopup("Đơn hàng đã hoàn tất thành công! Hóa đơn điện tử đang được xử lý.");
+            if (_userSalesCollection == null)
+                return (false, null, null, null, null, "Bộ sưu tập Sales chưa được khởi tạo.");
 
+            saleDocRef = _userSalesCollection.Document(saleData.saleId);
+            if (saleDocRef == null)
+            {
+                return (false, null, null, null, null, $"Không tìm thấy DocumentReference cho SaleId: {saleData.saleId}");
+            }
+        }
+        else if (saleDocRef == null)
+        {
+            return (false, null, null, null, null, "Không tìm thấy ID đơn hàng để cập nhật thông tin HĐĐT.");
+        }
+
+        // 3. TẠO DỮ LIỆU HÓA ĐƠN FPT (MAPPING)
+        FptInvoiceData fptData;
+        try
+        {
+            // THAY THẾ CHO LỖI CS0117: TẠO HÀM MAPPING TẠM THỜI
+            fptData = CreateFptInvoiceData(customer, productsInCart);
+        }
+        catch (Exception e)
+        {
+            return (false, null, null, null, null, $"Lỗi ánh xạ dữ liệu HĐĐT: {e.Message}");
+        }
+
+        statusPopupManager.ShowPopup("Đang gửi yêu cầu tạo Hóa đơn điện tử FPT. Vui lòng chờ...");
+
+        // 4. GỌI API TẠO HÓA ĐƠN FPT
+        FptEInvoiceApiClient.FptInvoiceResult result;
+        try
+        {
+            result = await apiClient.CreateInvoice(fptData);
+        }
+        catch (Exception e)
+        {
+            return (false, null, null, null, null, $"Lỗi kết nối API FPT: {e.Message}");
+        }
+
+        // 5. PHÂN TÍCH KẾT QUẢ VÀ CẬP NHẬT FIRESTORE
+        if (result.Success)
+        {
+            // Cập nhật SaleData cục bộ trước
+            saleData.fptInvoiceId = result.InvoiceId;
+            saleData.fptInvoiceSeq = result.InvoiceSeq;
+            saleData.fptInvoiceSerial = result.InvoiceSerial;
+            saleData.fptLookupLink = result.LookupLink;
+
+            // Chuẩn bị cập nhật Firestore
+            Dictionary<string, object> updates = new Dictionary<string, object>
+            {
+                {"fptInvoiceId", result.InvoiceId},
+                {"fptInvoiceSeq", result.InvoiceSeq},
+                {"fptInvoiceSerial", result.InvoiceSerial},
+                {"fptLookupLink", result.LookupLink}
+            };
+
+            // LƯU CẬP NHẬT VÀO FIRESTORE
             try
             {
-                var fptResponseJson = SimpleJSON.JSON.Parse(fptResponseData);
+                await saleDocRef.UpdateAsync(updates);
+                Debug.Log($"SalesFptInvoiceManager: Đã cập nhật Firestore với ID hóa đơn FPT: {result.InvoiceId}");
+                statusPopupManager.ShowPopup("Tạo Hóa đơn điện tử thành công!");
 
-                SimpleJSON.JSONNode invResponseNode = fptResponseJson["inv"];
-
-                string fptInvSid = null;
-                if (invResponseNode != null && invResponseNode["sid"] != null && !invResponseNode["sid"].IsNull)
-                {
-                    fptInvSid = invResponseNode["sid"].Value;
-                }
-
-                string fptInvSerial = null;
-                if (invResponseNode != null && invResponseNode["serial"] != null && !invResponseNode["serial"].IsNull)
-                {
-                    fptInvSerial = invResponseNode["serial"].Value;
-                }
-
-                string fptInvSeq = null;
-                if (fptResponseJson["seq"] != null && !fptResponseJson["seq"].IsNull)
-                {
-                    fptInvSeq = fptResponseJson["seq"].Value;
-                }
-
-                string fptLookupLink = null;
-                if (fptResponseJson["link"] != null && !fptResponseJson["link"].IsNull)
-                {
-                    fptLookupLink = fptResponseJson["link"].Value;
-                }
-
-                Debug.Log($"SalesFptInvoiceManager: Hóa đơn FPT đã được tạo thành công: SID: {fptInvSid ?? "N/A"}, Số: {fptInvSeq ?? "N/A"}, Ký hiệu: {fptInvSerial ?? "N/A"}, Link: {fptLookupLink ?? "N/A"}");
-
-                // Cập nhật SaleData trong Firestore với thông tin hóa đơn FPT
-                if (newSaleDocRef != null && !string.IsNullOrEmpty(newSaleDocRef.Id))
-                {
-                    Dictionary<string, object> fptInvoiceUpdates = new Dictionary<string, object>
-                    {
-                        {"fptInvoiceId", fptInvSid},
-                        {"fptInvoiceSeq", fptInvSeq},
-                        {"fptInvoiceSerial", fptInvSerial},
-                        {"fptLookupLink", fptLookupLink}
-                    };
-                    await newSaleDocRef.UpdateAsync(fptInvoiceUpdates);
-                    Debug.Log("SalesFptInvoiceManager: Đã cập nhật thông tin hóa đơn FPT vào SaleData Firestore.");
-                }
-                else
-                {
-                    Debug.LogWarning("SalesFptInvoiceManager: Không thể cập nhật thông tin hóa đơn FPT vào SaleData vì newSaleDocRef.Id bị rỗng.");
-                }
-                return (true, fptInvSid, fptInvSeq, fptInvSerial, fptLookupLink, null); // Trả về thông tin hóa đơn FPT
+                return (true, result.InvoiceId, result.InvoiceSeq, result.InvoiceSerial, result.LookupLink, null);
             }
-            catch (Exception jsonEx)
+            catch (Exception e)
             {
-                Debug.LogError($"SalesFptInvoiceManager: Lỗi khi phân tích phản hồi thành công từ FPT API: {jsonEx.Message}. Response: {fptResponseData}");
-                return (false, null, null, null, null, "Lỗi khi đọc phản hồi hóa đơn FPT: " + jsonEx.Message);
+                string error = $"Tạo HĐĐT thành công, NHƯNG LỖI cập nhật Firestore: {e.Message}. Vui lòng liên hệ hỗ trợ. Hóa đơn ID: {result.InvoiceId}";
+                Debug.LogError(error);
+                statusPopupManager.ShowPopup(error);
+
+                return (true, result.InvoiceId, result.InvoiceSeq, result.InvoiceSerial, result.LookupLink, error);
             }
         }
         else
         {
-            Debug.LogError($"SalesFptInvoiceManager: Lỗi khi gọi API FPT eInvoice: {fptErrorMessage}");
-            return (false, null, null, null, null, fptErrorMessage); // Trả về lỗi từ FPT API
+            // API FPT trả về lỗi
+            string errorMsg = $"Lỗi HĐĐT: {result.ErrorCode} - {result.ErrorMessage}. Chi tiết: {result.DetailMessage}";
+            Debug.LogError(errorMsg);
+            statusPopupManager.ShowPopup(errorMsg);
+
+            return (false, null, null, null, null, errorMsg);
         }
     }
 
-
-    // Phương thức xử lý khi nút "Xuất hóa đơn" được bấm (nếu nó không phải là phần của FinalizeTransaction)
+    // --- PHƯƠNG THỨC BỔ SUNG ĐỂ SỬA LỖI CS1061 ---
     public void OnExportInvoiceButtonClicked()
     {
-        // Kiểm tra quyền truy cập tính năng Hóa đơn điện tử trước
-        string currentPackageName = ShopSessionData.CachedShopSettings?.packageType;
-        if (AuthManager.GlobalAppConfig == null || ShopSessionData.AppPackageConfig == null ||
-            !ShopSessionData.AppPackageConfig.HasFeature(currentPackageName, AppFeature.EInvoice))
-        {
-            _statusPopupManager.ShowPopup($"Tính năng 'Xuất hóa đơn' yêu cầu gói phù hợp. Gói hiện tại: '{currentPackageName}'. Vui lòng nâng cấp gói để sử dụng.");
-            Debug.LogWarning($"SalesFptInvoiceManager: Gói '{currentPackageName}' không có quyền truy cập tính năng Hóa đơn điện tử.");
-            return;
-        }
-
-        Debug.Log("SalesFptInvoiceManager: Nút 'Xuất hóa đơn' được nhấn. Chức năng sẽ được phát triển sau.");
-        _statusPopupManager.ShowPopup("Chức năng 'Xuất hóa đơn' đang được phát triển.");
+        Debug.Log("Export Invoice button clicked. Logic should be triggered from SalesFinalizeTransaction or SaleOrderDetailPanel.");
+        statusPopupManager.ShowPopup("Xuất hóa đơn điện tử sẽ được xử lý tự động trong quy trình thanh toán.");
     }
 
-
-    // Phương thức chuyển đổi ProductData của Bizmate thành FptInvoiceItem
+    // --- HÀM MAPPING TẠM THỜI THAY THẾ FptInvoiceData.CreateFromSale ---
     private FptInvoiceItem ConvertProductToFptInvoiceItem(ProductData product, long quantity, int lineNumber)
     {
         double itemPrice = (double)product.price;
@@ -185,6 +187,7 @@ public class SalesFptInvoiceManager : MonoBehaviour
 
         FptInvoiceItem fptItem = new FptInvoiceItem
         {
+            // Chỉ điền các trường cần thiết cho Ánh xạ đơn giản
             line = lineNumber,
             name = product.productName ?? "",
             unit = product.unit ?? "",
@@ -193,56 +196,32 @@ public class SalesFptInvoiceManager : MonoBehaviour
             amount = itemAmount,
             vat = itemVat,
             total = itemTotal,
-
             code = product.barcode ?? "",
-            vrt = "10",
+            vrt = "10", // Giả định
         };
         return fptItem;
     }
 
-    // Phương thức tạo đối tượng FptInvoiceData từ dữ liệu Sale của Bizmate
     private FptInvoiceData CreateFptInvoiceData(CustomerData customer, Dictionary<string, ProductData> productsInCart)
     {
         FptInvoiceData fptInvoice = new FptInvoiceData();
 
-        ShopData currentShopSettings = ShopSessionData.CachedShopSettings;
-
-        fptInvoice.inv.type = currentShopSettings.invoiceType ?? "";
-        fptInvoice.inv.form = currentShopSettings.invoiceForm ?? "";
-        fptInvoice.inv.serial = currentShopSettings.invoiceSerial ?? "";
-
+        fptInvoice.inv.type = invoiceType ?? "";
+        fptInvoice.inv.form = invoiceForm ?? "";
+        fptInvoice.inv.serial = invoiceSerial ?? "";
         fptInvoice.inv.aun = 2;
-
         fptInvoice.inv.idt = DateTime.UtcNow.AddHours(7).AddSeconds(-5).ToString("yyyy-MM-dd HH:mm:ss");
-
         fptInvoice.inv.sid = Guid.NewGuid().ToString();
-
         fptInvoice.inv.paym = "TM";
-        fptInvoice.inv.note = null;
-
-        fptInvoice.inv.stax = currentShopSettings.taxId ?? "";
+        fptInvoice.inv.stax = taxId ?? "";
 
         if (customer != null)
         {
             fptInvoice.inv.btax = customer.taxId ?? "";
             fptInvoice.inv.baddr = customer.address ?? "";
-            fptInvoice.inv.btel = customer.phone ?? "";
-
-            if (customer.customerType == "Công ty")
-            {
-                fptInvoice.inv.bname = customer.companyName ?? "";
-                fptInvoice.inv.buyer = customer.name ?? "";
-            }
-            else
-            {
-                fptInvoice.inv.bname = "Khách lẻ";
-                fptInvoice.inv.buyer = customer.name ?? "";
-            }
-
-            if (!string.IsNullOrEmpty(customer.idNumber))
-            {
-                fptInvoice.inv.idnumber = customer.idNumber ?? "";
-            }
+            if (customer.customerType == "Công ty") fptInvoice.inv.bname = customer.companyName ?? "";
+            else fptInvoice.inv.bname = "Khách lẻ";
+            fptInvoice.inv.buyer = customer.name ?? "";
         }
 
         int lineNumber = 1;

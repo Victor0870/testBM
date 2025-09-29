@@ -16,7 +16,6 @@ public class FptEInvoiceApiClient : MonoBehaviour
     public static FptEInvoiceApiClient Instance { get; private set; }
 
     // Giữ lại FptEInvoiceConfig để làm nơi chứa các URL API mặc định (UAT/Production)
-    // Người dùng sẽ có thể ghi đè chúng qua Shop Settings nếu cần.
     [Header("Default Configuration (from ScriptableObject)")]
     public FptEInvoiceConfig fptDefaultConfig; // Kéo Asset MyFptEInvoiceConfig vào đây trong Inspector
 
@@ -29,6 +28,19 @@ public class FptEInvoiceApiClient : MonoBehaviour
     private bool _isSigningIn = false;
     private TaskCompletionSource<bool> _signInCompletionSource;
 
+    // --- CẤU TRÚC BỔ SUNG ĐỂ SỬA LỖI CS0426 (FptInvoiceResult) ---
+    public struct FptInvoiceResult
+    {
+        public bool Success;
+        public string InvoiceId;
+        public string InvoiceSeq;
+        public string InvoiceSerial;
+        public string LookupLink;
+        public string ErrorCode;
+        public string ErrorMessage;
+        public string DetailMessage;
+    }
+    // -----------------------------------------------------------------
 
     void Awake()
     {
@@ -496,4 +508,44 @@ public class FptEInvoiceApiClient : MonoBehaviour
             Debug.LogError($"FptEInvoiceApiClient: Error updating FPT token in Firestore: {e.Message}");
         }
     }
+
+    // --- PHƯƠNG THỨC BỔ SUNG ĐỂ SỬA LỖI CS1061 (CreateInvoice) ---
+    public async Task<FptInvoiceResult> CreateInvoice(FptInvoiceData fptData)
+    {
+        string url = fptDefaultConfig.createInvoiceUrl;
+
+        var (success, responseData, errorMessage) = await SendApiRequestAsync(url, "POST", fptData.ToJsonNode());
+
+        FptInvoiceResult result = new FptInvoiceResult();
+
+        if (success)
+        {
+            result.Success = true;
+
+            try
+            {
+                var fptResponseJson = SimpleJSON.JSON.Parse(responseData);
+                SimpleJSON.JSONNode invResponseNode = fptResponseJson["inv"];
+
+                result.InvoiceId = invResponseNode?["sid"]?.Value;
+                result.InvoiceSerial = invResponseNode?["serial"]?.Value;
+                result.InvoiceSeq = fptResponseJson["seq"]?.Value;
+                result.LookupLink = fptResponseJson["link"]?.Value;
+            }
+            catch (Exception jsonEx)
+            {
+                // Lỗi phân tích cú pháp JSON
+                result.Success = false;
+                result.ErrorMessage = $"Lỗi phân tích phản hồi FPT: {jsonEx.Message}";
+                result.DetailMessage = responseData;
+            }
+        }
+        else
+        {
+            result.Success = false;
+            result.ErrorMessage = errorMessage;
+        }
+        return result;
+    }
+    // -----------------------------------------------------------
 }

@@ -71,6 +71,7 @@ public class InventoryManager : MonoBehaviour
     [Header("Import Slip Creation Panel")]
     // Đảm bảo bạn gán script ImportSlipCreationPanelManager vào trường này trong Inspector
     public ImportSlipCreationPanelManager importSlipCreationPanelManager;
+    public Button openImportSlipCreationButton;
 
 
     [Header("Import Slip History")]
@@ -161,6 +162,10 @@ public class InventoryManager : MonoBehaviour
         searchInputField?.onValueChanged.AddListener(delegate { ApplyFiltersAndSearch(); });
 
         sortDropdown?.onValueChanged.AddListener(delegate { ApplyFiltersAndSearch(); });
+        if (openImportSlipCreationButton != null)
+            {
+                openImportSlipCreationButton.onClick.AddListener(ShowNewImportSlipPanel);
+            }
     }
 
     void PopulateSortDropdown()
@@ -797,6 +802,20 @@ public class InventoryManager : MonoBehaviour
         else
         {
             Debug.LogError("ImportSlipHistoryPanelManager chưa được gán trong Inspector.");
+        }
+    }
+    public void ShowNewImportSlipPanel()
+    {
+        // Gọi Panel Tạo Phiếu mà KHÔNG truyền ProductData nào (để kích hoạt chế độ hàng loạt/rỗng)
+        if (importSlipCreationPanelManager != null)
+        {
+            importSlipCreationPanelManager.ShowPanel(null, () => {
+                 Debug.Log("Đã hoàn thành tạo phiếu nhập hàng loạt.");
+            });
+        }
+        else
+        {
+            Debug.LogError("ImportSlipCreationPanelManager chưa được gán.");
         }
     }
 

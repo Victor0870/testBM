@@ -1,4 +1,4 @@
-// File: PackagePanelController.cs
+// File: Scripts/setting/PackagePanelController.cs
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -8,6 +8,7 @@ using Firebase.Extensions;
 using System.Collections.Generic;
 using static ShopSettingManager; // Để sử dụng ShopData
 using static ShopSessionData; // Truy cập AppPackageConfig
+// ĐÃ XÓA: using SalesDataService; // CS0138
 
 public class PackagePanelController : MonoBehaviour
 {
@@ -201,8 +202,26 @@ public class PackagePanelController : MonoBehaviour
             return;
         }
 
-        // Cập nhật packageType đã chọn từ Toggle vào _currentEditableData
-        // (đã được cập nhật trong OnPackageToggleChanged)
+        // --- 1. KIỂM TRA CHUYỂN GÓI VÀ KÍCH HOẠT MIGRATION ---
+        string oldPackage = _originalShopData.packageType;
+        string newPackage = _currentEditableData.packageType;
+        bool isUpgradingToCloud = false;
+
+        // Giả định: Cloud Sync được bật cho Advanced và Pro, và gói Basic là Local Only
+        if (newPackage != oldPackage)
+        {
+            // Kiểm tra xem gói cũ là Local Only và gói mới là Cloud Sync
+            bool wasLocal = !AppPackageConfig.HasFeature(oldPackage, AppFeature.CloudSync);
+            bool isNowCloud = AppPackageConfig.HasFeature(newPackage, AppFeature.CloudSync);
+
+            if (wasLocal && isNowCloud)
+            {
+                isUpgradingToCloud = true;
+                StatusPopupManager.Instance.ShowPopup("Phát hiện nâng cấp lên gói Cloud Sync. Sẽ tiến hành di chuyển dữ liệu sau khi lưu.");
+            }
+        }
+        // -----------------------------------------------------
+
 
         SetInteractableInputs(false);
         if (saveButton != null) saveButton.interactable = false;
@@ -210,9 +229,21 @@ public class PackagePanelController : MonoBehaviour
 
         try
         {
-            // Chỉ cập nhật trường packageType lên Firestore
+            // 2. Cập nhật trường packageType lên Firestore
             await _shopDocRef.UpdateAsync("packageType", _currentEditableData.packageType);
             Debug.Log("Cài đặt gói sử dụng đã được lưu thành công.");
+
+            // 3. KÍCH HOẠT MIGRATION NẾU CẦN
+            if (isUpgradingToCloud && SalesDataService.Instance != null)
+            {
+                // Gọi hàm di chuyển dữ liệu hàng loạt
+                await SalesDataService.Instance.MigrateLocalDataToCloud();
+            }
+            else if (isUpgradingToCloud)
+            {
+                Debug.LogError("SalesDataService chưa được khởi tạo. Không thể di chuyển dữ liệu.");
+                StatusPopupManager.Instance.ShowPopup("Lỗi: Không thể khởi tạo dịch vụ di chuyển dữ liệu Cloud. Vui lòng liên hệ hỗ trợ.");
+            }
 
 
             _originalShopData = _currentEditableData; // Cập nhật dữ liệu gốc
