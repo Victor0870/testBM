@@ -1,36 +1,37 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" editor-extension-namespace="UnityEditor" noNamespaceSchemaLocation="../../UIElementsSchema/UnityEngine.UIElements.xsd">
 
-    <ui:VisualElement name="MainContainer" style="flex-grow: 1; align-items: center; justify-content: center;">
+    <ui:VisualElement name="MainContainer" style="flex-grow: 1; align-items: center; justify-content: center; background-color: #F0FFF0;">
+        
+        <ui:Label name="global-status-label" text="" style="height: 30px; color: #00A38D;"/>
 
-        <ui:Label name="global-status-label" text="" style="height: 30px; color: yellow;"/>
-
-        <ui:VisualElement name="LoginPanelRoot" class="panel-root" style="width: 80%; max-width: 400px; padding: 20px; background-color: #333; border-radius: 10px;">
-            <ui:Label text="Đăng nhập" name="login-title" style="font-size: 24px; color: white; margin-bottom: 20px; -unity-text-align: middle-center;"/>
-
+        <ui:VisualElement name="LoginPanelRoot" class="panel-root" style="width: 80%; max-width: 400px; padding: 20px; background-color: #FFFFFF; border-radius: 10px;">
+            <ui:Label text="Đăng nhập" name="login-title" style="font-size: 24px; color: #333333; margin-bottom: 20px; -unity-text-align: middle-center;"/>
+            
             <ui:TextField label="Email" name="login-email-input" style="margin-bottom: 10px;"/>
             <ui:TextField label="Mật khẩu" name="login-password-input" is-password="true" style="margin-bottom: 20px;"/>
 
-            <ui:Button text="ĐĂNG NHẬP" name="login-button" class="action-button" style="height: 40px; margin-bottom: 10px; background-color: #55f; color: white;"/>
-            <ui:Button text="Quên mật khẩu?" name="forgot-password-button" style="background-color: transparent; border-width: 0; color: #aaa; -unity-text-align: middle-center;"/>
-
-            <ui:VisualElement style="height: 1px; background-color: #555; margin: 15px 0;"/>
-
-            <ui:Button text="Chuyển sang ĐĂNG KÝ" name="show-create-account-button" style="background-color: #444; color: #fff; height: 35px;"/>
+            <ui:Button text="ĐĂNG NHẬP" name="login-button" class="action-button" style="height: 40px; margin-bottom: 10px; background-color: #00A38D; color: #FFFFFF; font-size: 16px;"/>
+            
+            <ui:Button text="Quên mật khẩu?" name="forgot-password-button" style="background-color: transparent; border-width: 0; color: #00A38D; -unity-text-align: middle-center;"/>
+            
+            <ui:VisualElement style="height: 1px; background-color: #E0E0E0; margin: 15px 0;"/>
+            
+            <ui:Button text="Chuyển sang ĐĂNG KÝ" name="show-create-account-button" style="background-color: #FAFAFA; color: #00A38D; height: 35px; border-color: #00A38D; border-width: 1px;"/>
         </ui:VisualElement>
 
-        <ui:VisualElement name="CreateAccountPanelRoot" class="panel-root" style="width: 80%; max-width: 400px; padding: 20px; background-color: #333; border-radius: 10px; display: none;">
-            <ui:Label text="Tạo tài khoản" name="signup-title" style="font-size: 24px; color: white; margin-bottom: 20px; -unity-text-align: middle-center;"/>
-
+        <ui:VisualElement name="CreateAccountPanelRoot" class="panel-root" style="width: 80%; max-width: 400px; padding: 20px; background-color: #FFFFFF; border-radius: 10px; display: none;">
+            <ui:Label text="Tạo tài khoản" name="signup-title" style="font-size: 24px; color: #333333; margin-bottom: 20px; -unity-text-align: middle-center;"/>
+            
             <ui:TextField label="Tên tài khoản" name="signup-username-input" style="margin-bottom: 10px;"/>
             <ui:TextField label="Email" name="signup-email-input" style="margin-bottom: 10px;"/>
             <ui:TextField label="Mật khẩu (min 6)" name="signup-password-input" is-password="true" style="margin-bottom: 10px;"/>
             <ui:TextField label="Xác nhận mật khẩu" name="signup-confirm-password-input" is-password="true" style="margin-bottom: 20px;"/>
 
-            <ui:Button text="TẠO TÀI KHOẢN" name="create-account-button" class="action-button" style="height: 40px; margin-bottom: 10px; background-color: #5f5; color: black;"/>
-
-            <ui:VisualElement style="height: 1px; background-color: #555; margin: 15px 0;"/>
-
-            <ui:Button text="Chuyển sang ĐĂNG NHẬP" name="show-login-button" style="background-color: #444; color: #fff; height: 35px;"/>
+            <ui:Button text="TẠO TÀI KHOẢN" name="create-account-button" class="action-button" style="height: 40px; margin-bottom: 10px; background-color: #00A38D; color: #FFFFFF; font-size: 16px;"/>
+            
+            <ui:VisualElement style="height: 1px; background-color: #E0E0E0; margin: 15px 0;"/>
+            
+            <ui:Button text="Chuyển sang ĐĂNG NHẬP" name="show-login-button" style="background-color: #FAFAFA; color: #00A38D; height: 35px; border-color: #00A38D; border-width: 1px;"/>
         </ui:VisualElement>
 
     </ui:VisualElement>
