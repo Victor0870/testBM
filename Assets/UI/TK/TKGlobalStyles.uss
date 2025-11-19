@@ -1,18 +1,43 @@
 /* File: Assets/UI/TK/TKGlobalStyles.uss */
 
-/* Quy tắc này áp dụng cho mọi VisualElement trong UI */
+/* ==========================================================
+ * 1. Global Font and Base Size
+ * ========================================================== */
 * {
-    /* * Kéo một trong các tệp Font Inter SDF (ví dụ: Inter_24pt-Regular SDF)
-     * vào trường font của quy tắc CSS này trong Inspector
-     * (hoặc nhập đường dẫn GUID nếu chỉnh sửa bằng VS Code)
-     */
-    -unity-font-definition: resource("Assets/Fonts/Inter/Inter_24pt-Regular SDF.asset"); /* Ví dụ về đường dẫn */
-    /* Hoặc chỉ định font size cơ bản nếu cần */
-    font-size: 14px;
-    color: white; /* Đảm bảo màu chữ hiển thị tốt trên nền tối */
+    /* Đảm bảo đường dẫn này trỏ đến tệp Inter_24pt-Regular SDF.asset */
+    -unity-font-definition: resource("Assets/Fonts/Inter/Inter_24pt-Regular SDF.asset"); 
+    
+    /* Đặt cỡ chữ cơ bản */
+    font-size: 14px; 
+    
+    /* Màu chữ mặc định (Dark Gray) */
+    color: #333333; 
 }
 
-/* Tùy chọn: Đảm bảo các TextField cũng dùng font này */
-.unity-base-text-field__input {
-    -unity-font-definition: resource("Assets/Fonts/Inter/Inter_24pt-Regular SDF.asset");
+/* ==========================================================
+ * 2. Elegant TextField Styling (.elegant-input)
+ * ========================================================== */
+
+/* Ẩn Label mặc định trong TextField vì chúng ta dùng Label riêng (Email, Mật khẩu) */
+.elegant-input > .unity-base-text-field__label {
+    display: none; 
 }
+
+/* Tinh chỉnh Input Box (Phần nhập liệu) */
+.elegant-input > .unity-base-text-field__input {
+    background-color: #FFFFFF; /* Nền trắng */
+    border-color: #CCCCCC; /* Viền xám nhạt */
+    border-radius: 5px; /* Bo góc */
+    border-width: 1px;
+    font-size: 16px; /* Cỡ chữ trong ô input */
+    color: #333333; /* Màu chữ */
+    padding-left: 10px;
+    
+    /* Loại bỏ padding mặc định nếu cần */
+    padding-top: 0; 
+    padding-bottom: 0;
+}
+
+/* Tinh chỉnh Placeholder Text Color (sử dụng selector chung) */
+/* Thao tác này có thể cần Editor-specific CSS hoặc code-behind trong Unity */
+/* Tạm thời chỉ đảm bảo chữ input color là #333333 */
