@@ -14,6 +14,7 @@ public class ProductSelectionPopupManager : MonoBehaviour
     public Transform contentParent;
     public GameObject productItemPrefab; // Prefab item trong danh sách chọn
     public Button closeButton;
+    public Button addNewProductButton; // <-- NÚT MỚI: DẪN ĐẾN TẠO SẢN PHẨM MỚI
 
     // Callback: ProductData được chọn
     private Action<ProductData> _onProductSelectedCallback;
@@ -29,21 +30,29 @@ public class ProductSelectionPopupManager : MonoBehaviour
         closeButton?.onClick.AddListener(HideSelection);
         searchInputField?.onValueChanged.AddListener(OnSearchValueChanged);
     }
-
-    // ShowSelection được gọi từ ImportSlipCreationPanelManager
-    public void ShowSelection(List<string> currentSlipProductIds, Action<ProductData> onProductSelected)
+    
+    // MỚI: Phương thức ShowSelection với 3 đối số (Fix CS1501)
+    public void ShowSelection(List<string> currentSlipProductIds, Action<ProductData> onProductSelected, Action onAddNewProductRequested)
     {
         _onProductSelectedCallback = onProductSelected;
-        _excludeProductIds = currentSlipProductIds; // Lưu lại danh sách ID cần loại trừ
+        _excludeProductIds = currentSlipProductIds; 
 
-        // GIẢ ĐỊNH CÁCH LẤY TẤT CẢ SẢN PHẨM:
-        // Cần chỉnh sửa InventoryDataService để có một public method trả về List<ProductData>
+        // 1. Lấy tất cả sản phẩm (SỬ DỤNG HÀM PUBLIC ĐÃ SỬA LỖI)
         if (InventoryDataService.Instance != null)
         {
-            _allProducts = InventoryDataService.Instance.LoadProductsFromLocalDB();
+            _allProducts = InventoryDataService.Instance.LoadProductsFromLocalDB(); 
         }
         
-        RenderProductList(null); // Hiển thị tất cả ban đầu
+        // 2. Gán listener cho nút "Thêm sản phẩm mới"
+        addNewProductButton?.onClick.RemoveAllListeners();
+        addNewProductButton?.onClick.AddListener(() => {
+            // Khi bấm nút Add New Product, ẩn popup hiện tại và gọi callback của InventoryManager
+            HideSelection();
+            onAddNewProductRequested?.Invoke(); // Gọi hàm mở Panel Add Product của InventoryManager
+        });
+
+        // 3. Render list
+        RenderProductList(null); 
         searchInputField.text = "";
         panelRoot?.SetActive(true);
     }
