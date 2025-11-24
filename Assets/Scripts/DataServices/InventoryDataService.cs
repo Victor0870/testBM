@@ -132,7 +132,7 @@ public class InventoryDataService : MonoBehaviour
     }
 
     [Preserve]
-    private List<ProductData> LoadProductsFromLocalDB()
+    public List<ProductData> LoadProductsFromLocalDB()
     {
         List<ProductData> products = new List<ProductData>();
 
@@ -487,4 +487,5 @@ public class InventoryDataService : MonoBehaviour
             return slip;
         }
     }
+
 }
