@@ -7,6 +7,7 @@ using Firebase.Extensions; // Cần thiết cho ContinueWithOnMainThread
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq; // Cần cho Autocomplete
 
 public class AddProductPanelManager : MonoBehaviour
 {
@@ -20,23 +21,28 @@ public class AddProductPanelManager : MonoBehaviour
     public TMP_InputField imageURLInputField; // Tùy chọn
     public TMP_InputField initialStockInputField;
 
-    // Sử dụng Dropdown cho Category và Manufacturer
-    public TMP_Dropdown categoryDropdown; // Có thể để user nhập hoặc chọn từ danh sách có sẵn
-    public TMP_Dropdown manufacturerDropdown; // Có thể để user nhập hoặc chọn từ danh sách có sẵn
+    // THAY THẾ: Sử dụng InputField cho Category và Manufacturer
+    public TMP_InputField categoryInputField; // <-- SỬA TẠI ĐÂY
+    public TMP_InputField manufacturerInputField; // <-- SỬA TẠI ĐÂY
+
+    // THÊM: Tham chiếu tới các container Suggestion và Prefab Item Suggestion
+    [Header("Autocomplete UI (Gợi ý)")]
+    public RectTransform categorySuggestionContainer;
+    public RectTransform manufacturerSuggestionContainer;
+    public GameObject suggestionItemPrefab; // Prefab của 1 dòng gợi ý
 
     public Button confirmAddButton;
     public Button cancelAddButton;
-    // THAY ĐỔI: Bỏ biến này vì sẽ dùng StatusPopupManager
-    // public TMP_Text statusMessageText;
-
-    // THAY ĐỔI: Loại bỏ tham chiếu trực tiếp đến StatusPopupManager vì nó là Singleton
-    // public StatusPopupManager statusPopupManager;
 
     private FirebaseFirestore db;
     private Firebase.Auth.FirebaseUser currentUser;
     private CollectionReference userProductsCollection;
 
     private Action onProductAddedCallback; // Callback để thông báo cho InventoryManager
+
+    // Dữ liệu gợi ý sẽ được lưu tạm ở đây
+    private List<string> _existingCategories = new List<string>();
+    private List<string> _existingManufacturers = new List<string>();
 
     void Awake()
     {
@@ -60,6 +66,9 @@ public class AddProductPanelManager : MonoBehaviour
         {
             auth.StateChanged -= AuthStateChanged;
         }
+        // Gỡ listener Autocomplete khi bị hủy
+        categoryInputField?.onValueChanged.RemoveAllListeners();
+        manufacturerInputField?.onValueChanged.RemoveAllListeners();
     }
 
     private void AuthStateChanged(object sender, EventArgs e)
@@ -85,6 +94,8 @@ public class AddProductPanelManager : MonoBehaviour
     public void ShowPanel(Action callback, List<string> existingCategories, List<string> existingManufacturers)
     {
         onProductAddedCallback = callback;
+        _existingCategories = existingCategories;
+        _existingManufacturers = existingManufacturers;
 
         // Reset các trường input
         productNameInputField.text = "";
@@ -93,12 +104,20 @@ public class AddProductPanelManager : MonoBehaviour
         importPriceInputField.text = "";
         barcodeInputField.text = "";
         imageURLInputField.text = "";
-        initialStockInputField.text = "0"; // Mặc định tồn kho ban đầu là 0
 
-        // THAY ĐỔI: Bỏ dòng này
-        // statusMessageText.text = "";
+        // Thiết lập giá trị mặc định "0"
+        if (initialStockInputField != null) initialStockInputField.text = "0"; // <-- Đặt mặc định là "0"
 
-        PopulateDropdowns(existingCategories, existingManufacturers);
+        categoryInputField.text = ""; // <-- Reset Input Field mới
+        manufacturerInputField.text = ""; // <-- Reset Input Field mới
+
+        // Thiết lập Autocomplete
+        SetupAutocompleteListeners();
+
+        // Đảm bảo gợi ý đang ẩn khi panel mở
+        if(categorySuggestionContainer != null) categorySuggestionContainer.gameObject.SetActive(false);
+        if(manufacturerSuggestionContainer != null) manufacturerSuggestionContainer.gameObject.SetActive(false);
+
 
         if (panelRoot != null)
         {
@@ -106,31 +125,67 @@ public class AddProductPanelManager : MonoBehaviour
         }
     }
 
-    private void PopulateDropdowns(List<string> categories, List<string> manufacturers)
+    // Đã loại bỏ phương thức PopulateDropdowns
+
+    private void SetupAutocompleteListeners()
     {
-        if (categoryDropdown != null)
+        // Xóa listener cũ để tránh bị gọi nhiều lần
+        categoryInputField?.onValueChanged.RemoveAllListeners();
+        manufacturerInputField?.onValueChanged.RemoveAllListeners();
+
+        // Thêm listener mới cho Category
+        categoryInputField?.onValueChanged.AddListener((text) =>
+            GenerateSuggestions(text, _existingCategories, categorySuggestionContainer, categoryInputField));
+
+        // Thêm listener mới cho Manufacturer
+        manufacturerInputField?.onValueChanged.AddListener((text) =>
+            GenerateSuggestions(text, _existingManufacturers, manufacturerSuggestionContainer, manufacturerInputField));
+    }
+
+    // HÀM XỬ LÝ GỢI Ý (Conceptual Autocomplete Logic)
+    private void GenerateSuggestions(string searchText, List<string> sourceList, RectTransform container, TMP_InputField targetInput)
+    {
+        // Xóa gợi ý cũ
+        foreach (Transform child in container)
         {
-            categoryDropdown.ClearOptions();
-            List<string> categoryOptions = new List<string> { "Chọn hoặc nhập danh mục" };
-            if (categories != null) categoryOptions.AddRange(categories);
-            categoryDropdown.AddOptions(categoryOptions);
-            // Thêm listener để xử lý khi người dùng nhập text mới hoặc chọn từ dropdown
-            categoryDropdown.onValueChanged.RemoveAllListeners();
-            categoryDropdown.onValueChanged.AddListener((int index) => {
-                // Tùy chọn: nếu người dùng chọn mục đầu tiên "Chọn hoặc nhập...", bạn có thể reset InputField hoặc xử lý khác
-            });
+            Destroy(child.gameObject);
         }
 
-        if (manufacturerDropdown != null)
+        if (string.IsNullOrEmpty(searchText) || suggestionItemPrefab == null)
         {
-            manufacturerDropdown.ClearOptions();
-            List<string> manufacturerOptions = new List<string> { "Chọn hoặc nhập nhà sản xuất" };
-            if (manufacturers != null) manufacturerOptions.AddRange(manufacturers);
-            manufacturerDropdown.AddOptions(manufacturerOptions);
-            manufacturerDropdown.onValueChanged.RemoveAllListeners();
-            manufacturerDropdown.onValueChanged.AddListener((int index) => {
-                // Tùy chọn: xử lý tương tự như categoryDropdown
-            });
+            container.gameObject.SetActive(false);
+            return;
+        }
+
+        string lowerSearchText = searchText.ToLower();
+        var suggestions = sourceList
+            .Where(s => !string.IsNullOrEmpty(s) && s.ToLower().Contains(lowerSearchText))
+            .ToList();
+
+        if (suggestions.Count > 0)
+        {
+            container.gameObject.SetActive(true);
+            foreach (var suggestion in suggestions.Take(5)) // Giới hạn 5 gợi ý
+            {
+                GameObject suggestionGO = Instantiate(suggestionItemPrefab, container);
+                TMP_Text suggestionText = suggestionGO.GetComponentInChildren<TMP_Text>();
+                Button suggestionButton = suggestionGO.GetComponent<Button>();
+
+                if (suggestionText != null) suggestionText.text = suggestion;
+
+                if (suggestionButton != null)
+                {
+                    string suggestedValue = suggestion; // Tạo biến cục bộ để Closure bắt đúng giá trị
+                    suggestionButton.onClick.AddListener(() => {
+                        targetInput.text = suggestedValue; // Gán giá trị vào Input Field
+                        container.gameObject.SetActive(false); // Ẩn danh sách gợi ý
+                    });
+                }
+            }
+        }
+        else
+        {
+            container.gameObject.SetActive(false);
         }
     }
 
@@ -141,8 +196,11 @@ public class AddProductPanelManager : MonoBehaviour
         {
             panelRoot.SetActive(false);
         }
-        // THAY ĐỔI: Bỏ dòng này
-        // statusMessageText.text = "";
+        // Xóa gợi ý khi ẩn panel
+        if(categorySuggestionContainer != null)
+            foreach (Transform child in categorySuggestionContainer) Destroy(child.gameObject);
+        if(manufacturerSuggestionContainer != null)
+            foreach (Transform child in manufacturerSuggestionContainer) Destroy(child.gameObject);
     }
 
     private async void OnConfirmAddButtonClicked()
@@ -150,7 +208,6 @@ public class AddProductPanelManager : MonoBehaviour
         if (userProductsCollection == null)
         {
             Debug.LogError("UserProductsCollection chưa được thiết lập. Người dùng chưa đăng nhập?");
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
             StatusPopupManager.Instance.ShowPopup("Lỗi: Vui lòng đăng nhập để thêm sản phẩm.");
             return;
         }
@@ -163,43 +220,39 @@ public class AddProductPanelManager : MonoBehaviour
         string barcode = barcodeInputField.text.Trim();
         string imageUrl = imageURLInputField.text.Trim();
         long initialStock = 0;
-        string category = "";
-        string manufacturer = "";
 
-        // Lấy giá trị từ dropdown hoặc input text (nếu bạn có cả 2)
-        if (categoryDropdown != null && categoryDropdown.value > 0)
-        {
-            category = categoryDropdown.options[categoryDropdown.value].text;
-        }
-
-        if (manufacturerDropdown != null && manufacturerDropdown.value > 0)
-        {
-            manufacturer = manufacturerDropdown.options[manufacturerDropdown.value].text;
-        }
+        // LẤY GIÁ TRỊ TỪ INPUT FIELD MỚI
+        string category = categoryInputField.text.Trim();
+        string manufacturer = manufacturerInputField.text.Trim();
 
         // Kiểm tra validation
         if (string.IsNullOrEmpty(productName) || string.IsNullOrEmpty(unit))
         {
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
             StatusPopupManager.Instance.ShowPopup("Tên sản phẩm và Đơn vị là bắt buộc.");
             return;
         }
+
+        // Kiểm tra Giá Bán và Giá Nhập
         if (!long.TryParse(priceInputField.text, out price) || price < 0)
         {
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
-            StatusPopupManager.Instance.ShowPopup("Giá bán không hợp lệ.");
+            StatusPopupManager.Instance.ShowPopup("Giá bán không hợp lệ (phải là số nguyên không âm).");
             return;
         }
         if (!long.TryParse(importPriceInputField.text, out importPrice) || importPrice < 0)
         {
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
-            StatusPopupManager.Instance.ShowPopup("Giá nhập không hợp lệ.");
+            StatusPopupManager.Instance.ShowPopup("Giá nhập không hợp lệ (phải là số nguyên không âm).");
             return;
         }
-        if (!long.TryParse(initialStockInputField.text, out initialStock) || initialStock < 0)
+
+        // Kiểm tra Tồn kho ban đầu (Cho phép để trống hoặc 0)
+        string stockText = initialStockInputField.text.Trim();
+        if (string.IsNullOrEmpty(stockText))
         {
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
-            StatusPopupManager.Instance.ShowPopup("Tồn kho ban đầu không hợp lệ.");
+            initialStock = 0; // <-- Đặt mặc định là 0 nếu để trống
+        }
+        else if (!long.TryParse(stockText, out initialStock) || initialStock < 0)
+        {
+            StatusPopupManager.Instance.ShowPopup("Tồn kho ban đầu không hợp lệ (phải là số nguyên không âm).");
             return;
         }
 
@@ -217,9 +270,6 @@ public class AddProductPanelManager : MonoBehaviour
             manufacturer = manufacturer
         };
 
-        // THAY ĐỔI: Bỏ dòng này
-        // statusMessageText.text = "Đang thêm sản phẩm...";
-        // Bạn có thể thêm một Loading Panel hoặc chỉ làm mờ màn hình ở đây
         confirmAddButton.interactable = false;
         cancelAddButton.interactable = false;
 
@@ -231,17 +281,16 @@ public class AddProductPanelManager : MonoBehaviour
 
         try
         {
-            // Thêm sản phẩm mới vào Firestore. Firestore sẽ tự động tạo một Document ID mới.
+            // Thêm sản phẩm mới vào Firestore.
             DocumentReference docRef = await userProductsCollection.AddAsync(newProduct);
-            newProduct.productId = docRef.Id; // Gán lại ID cho đối tượng cục bộ
+            newProduct.productId = docRef.Id;
 
             Debug.Log($"Đã thêm sản phẩm mới thành công: {newProduct.productName} với ID: {newProduct.productId}");
-            // THAY ĐỔI: Sử dụng StatusPopupManager.Instance
             StatusPopupManager.Instance.ShowPopup("Thêm sản phẩm thành công!");
 
             onProductAddedCallback?.Invoke(); // Gọi callback để InventoryManager làm mới
 
-            await Task.Delay(1000); // Đợi 1 giây để người dùng thấy thông báo
+            await Task.Delay(1000);
             HidePanel();
         }
         catch (Exception e)
@@ -251,7 +300,7 @@ public class AddProductPanelManager : MonoBehaviour
                     {
                         errorMessage = "Không có kết nối Internet hoặc máy chủ Firebase không khả dụng. Vui lòng kiểm tra mạng của bạn.";
                     }
-                    StatusPopupManager.Instance.ShowPopup(errorMessage); // GỌI POPUP
+                    StatusPopupManager.Instance.ShowPopup(errorMessage);
                     Debug.LogError($"Lỗi khi thêm sản phẩm mới: {e.Message}");
         }
         finally

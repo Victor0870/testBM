@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sale.unity
     guid: 46a5287e321404e42b5263b15f1f9021
+  - enabled: 1
+    path: Assets/Scenes/TK/TKLogin.unity
+    guid: cccd932f1971ac34cbfadcec27f79383
+  - enabled: 1
+    path: Assets/Scenes/TK/TKHomepage.unity
+    guid: 1dff9fe8d157ddb4aa136c4f904b45ea
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
