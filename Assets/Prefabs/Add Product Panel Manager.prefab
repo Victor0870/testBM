@@ -2560,7 +2560,7 @@ GameObject:
   - component: {fileID: 963018778415404369}
   - component: {fileID: 2859466034498101758}
   m_Layer: 5
-  m_Name: Add new product
+  m_Name: Add Product Panel Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

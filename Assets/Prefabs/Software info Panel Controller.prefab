@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 963018778415404369}
   - component: {fileID: 6588905365121540274}
   m_Layer: 5
-  m_Name: App infor
+  m_Name: Software info Panel Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

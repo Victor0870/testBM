@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8422905241149073890}
   - component: {fileID: 5218748315876736451}
   m_Layer: 5
-  m_Name: GroupButtonEdit
+  m_Name: _GroupButtonEdit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

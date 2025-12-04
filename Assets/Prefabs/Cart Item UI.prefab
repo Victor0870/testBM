@@ -650,7 +650,7 @@ GameObject:
   - component: {fileID: 2205274893611428583}
   - component: {fileID: 4235173360031282780}
   m_Layer: 5
-  m_Name: Product selected
+  m_Name: Cart Item UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

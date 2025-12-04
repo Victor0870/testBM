@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 6874430551720748461}
   - component: {fileID: 6323254562718472446}
   m_Layer: 5
-  m_Name: lisproduct panel
+  m_Name: _lisproduct panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
