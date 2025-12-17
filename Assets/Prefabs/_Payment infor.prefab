@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 3090458315299049579}
   - component: {fileID: 963018778415404369}
   m_Layer: 5
-  m_Name: Payment infor
+  m_Name: _Payment infor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

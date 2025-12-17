@@ -837,7 +837,7 @@ GameObject:
   - component: {fileID: 963018778415404369}
   - component: {fileID: 7494249347084131431}
   m_Layer: 5
-  m_Name: Package infor
+  m_Name: Package Panel Cotroller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

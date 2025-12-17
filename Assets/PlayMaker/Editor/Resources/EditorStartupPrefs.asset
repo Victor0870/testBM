@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   welcomeScreenVersion: '1.9.9 '
   playmakerVersion: 
-  showWelcomeScreen: 1
+  showWelcomeScreen: 0
   showUpgradeGuide: 0
-  lastAutoUpdateSignature: 6000.0.50f1__D:/Unity/Bizmate/Assets__0.0.0.0
+  lastAutoUpdateSignature: 6000.2.14f1__D:/Unity/unity 6.2/Bizmate 6.2/Assets__0.0.0.0
   useLegacyNetworking: 0
